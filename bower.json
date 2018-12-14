@@ -7,7 +7,9 @@
   "description": "vaadin-pro-grid",
   "main": [
     "vaadin-pro-grid.html",
-    "theme/material/vaadin-pro-grid.html"
+    "vaadin-pro-grid-edit-column.html",
+    "theme/material/vaadin-pro-grid.html",
+    "theme/material/vaadin-pro-grid-edit-column.html"
   ],
   "keywords": [
     "Vaadin",
@@ -36,6 +38,7 @@
   },
   "devDependencies": {
     "iron-component-page": "^3.0.0",
+    "iron-test-helpers": "^2.0.0",
     "webcomponentsjs": "^1.0.0",
     "web-component-tester": "^6.1.5",
     "vaadin-demo-helpers": "vaadin/vaadin-demo-helpers#^2.2.0"

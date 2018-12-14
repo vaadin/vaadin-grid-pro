@@ -6,6 +6,42 @@
       }
     </style>
 
+    <h3>Edit Column</h3>
+    <vaadin-demo-snippet id='pro-grid-basic-demos-defining-content'>
+      <template preserve-content>
+        <vaadin-pro-grid>
+          <vaadin-pro-grid-edit-column path="name.first" header="First name">
+            <template>
+              <span style="color: green">[[item.name.first]]</span>
+            </template>
+          </vaadin-pro-grid-edit-column>
+          <vaadin-pro-grid-edit-column path="name.last" header="Last name"></vaadin-pro-grid-edit-column>
+        </vaadin-pro-grid>
+
+        <script>
+          window.addDemoReadyListener('#pro-grid-basic-demos-defining-content', function(document) {
+            // Assign an array of user objects as the pro grid's items
+            document.querySelector('vaadin-pro-grid').items = Vaadin.GridDemo.users;
+
+            /*
+            * Each object in the above "users" array follows the same structure:
+            * {
+            *   "name": {
+            *     "first": "Laura",
+            *     "last": "Arnaud",
+            *     ...
+            *   },
+            *   "location": {
+            *     "city": "Perpignan"
+            *     ...
+            *   }
+            *   ...
+            * }
+            */
+          });
+        </script>
+      </template>
+    </vaadin-demo-snippet>
 
     <h3>Defining Content</h3>
     <p>
