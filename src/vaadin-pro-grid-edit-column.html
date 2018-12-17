@@ -65,7 +65,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         this.__editStateTemplate.templatizer.dataHost = this;
 
         this.__editStateRenderer = function(root, column, rowData) {
-          if (!root.firstElementChild) {
+          if (!root.firstElementChild || root.firstElementChild.localName !== 'vaadin-text-field') {
             root.innerHTML = '<vaadin-text-field theme="small"></vaadin-text-field>';
           }
           // TODO: move to the grid for custom edit state renderer support?

@@ -148,8 +148,10 @@
 
           column.renderer = function(root, owner, model) {
             root.innerHTML = '';
+            const wrapper = document.createElement('div');
             const text = document.createTextNode(model.index + ' ' + model.item.name);
-            root.appendChild(text);
+            wrapper.appendChild(text);
+            root.appendChild(wrapper);
           };
 
           flushGrid(grid);
