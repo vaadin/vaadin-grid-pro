@@ -58,6 +58,9 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
            * Type of the cell editor component to be rendered. Allowed values:
            * - `text` (default) - renders a text field
            * - `boolean` - renders a checkbox
+           *
+           * Editor type is set to `custom` when either `editModeRenderer` is set,
+           * or editor template provided for the column.
            */
           editorType: {
             type: String,
@@ -77,6 +80,12 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
            */
           path: String
         };
+      }
+
+      static get observers() {
+        return [
+          '_editModeTemplateOrRendererChanged(_editModeTemplate, editModeRenderer)',
+        ];
       }
 
       constructor() {
@@ -109,6 +118,13 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         super.connectedCallback();
 
         this._editTemplateObserver.flush();
+      }
+
+      _editModeTemplateOrRendererChanged(template, renderer) {
+        if (template && renderer) {
+          throw new Error('You should only use either a renderer or a template');
+        }
+        this.editorType = (template || renderer) ? 'custom' : 'text';
       }
 
       /**
@@ -150,13 +166,13 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       }
 
       _getEditorTagName(cell) {
-        return this._editModeTemplate || this.editModeRenderer ?
+        return this.editorType === 'custom' ?
           this._getEditorComponent(cell).localName :
           this._getTagNameByType();
       }
 
       _getEditorComponent(cell) {
-        return this._editModeTemplate || this.editModeRenderer ?
+        return this.editorType === 'custom' ?
           cell._content.firstElementChild :
           cell._content.querySelector(this._getEditorTagName(cell));
       }
