@@ -68,6 +68,9 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
           case 32:
             !this.__edited && this._enterEditFromEvent(e);
             break;
+          default:
+            this._isAlphaNumericKey(e.keyCode) && this._enterEditFromEvent(e, 'text');
+            break;
         }
       });
     }
@@ -75,6 +78,14 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
     _applyEdit({path, value, index, item}) {
       this.set(path, value, item);
       this.notifyPath('items.' + index + '.' + path, value);
+    }
+
+    _isAlphaNumericKey(keyCode) {
+      return (
+        (keyCode >= 65 && keyCode <= 90) || // ascii a-z
+        (keyCode >= 48 && keyCode <= 57) || // top 0-9 keys
+        (keyCode >= 96 && keyCode <= 105) // num pad 0-9
+      );
     }
 
     _onItemPropertyChanged(e) {
@@ -114,7 +125,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       }
     }
 
-    _enterEditFromEvent(e) {
+    _enterEditFromEvent(e, type) {
       const context = this.getEventContext(e);
       const column = context.column;
       const edited = this.__edited;
@@ -124,6 +135,10 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         const cell = path[path.indexOf(this.$.table) - 3];
 
         if (!cell || cell.getAttribute('part').indexOf('details-cell') > -1) {
+          return;
+        }
+
+        if (type && column.editorType !== type) {
           return;
         }
 
