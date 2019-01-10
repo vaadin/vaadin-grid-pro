@@ -66,7 +66,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
           /**
            * Type of the cell editor component to be rendered. Allowed values:
-           * - `text` (default) - renders a text field
+           * - `text` (default, also applies when no value set) - renders a text field
            * - `boolean` - renders a checkbox
            * - `select` - renders a select with a list of items passed as `editorOptions`
            *
@@ -74,8 +74,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
            * or editor template provided for the column.
            */
           editorType: {
-            type: String,
-            value: 'text'
+            type: String
           },
 
           /**
@@ -135,7 +134,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         if (template && renderer) {
           throw new Error('You should only use either a renderer or a template');
         }
-        this.editorType = (template || renderer) ? 'custom' : 'text';
+        this.editorType = (template || renderer) ? 'custom' : undefined;
       }
 
       /**

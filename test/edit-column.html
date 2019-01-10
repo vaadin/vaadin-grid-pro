@@ -610,12 +610,12 @@
           expect(column.editorType).to.be.equal('custom');
         });
 
-        it('should reset the column `editorType` to text when renderer is removed', () => {
+        it('should reset the column `editorType` to undefined when renderer is removed', () => {
           column.editModeRenderer = function(root, owner, model) {
             root.innerHTML = '<input>';
           };
           column.editModeRenderer = null;
-          expect(column.editorType).to.be.equal('text');
+          expect(column.editorType).to.be.equal(undefined);
         });
 
         it('should throw an error when setting a template if there is already a renderer', () => {
@@ -673,9 +673,9 @@
           expect(column.editorType).to.be.equal('custom');
         });
 
-        it('should reset the column `editorType` to text when template is removed', () => {
+        it('should reset the column `editorType` to undefined when template is removed', () => {
           column._editModeTemplate = null;
-          expect(column.editorType).to.be.equal('text');
+          expect(column.editorType).to.be.equal(undefined);
         });
 
         it('should throw an error when setting a renderer if there is already a template', () => {
