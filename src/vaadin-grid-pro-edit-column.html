@@ -75,7 +75,13 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
            */
           editorType: {
             type: String,
-            value: 'text'
+            value: 'text',
+            observer: '__editorTypeChanged'
+          },
+
+          testProp: {
+            type: String,
+            observer: '__testPropChanged'
           },
 
           /**
@@ -122,6 +128,14 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
             `;
           }
         };
+      }
+
+      __editorTypeChanged(prop) {
+        console.log(prop, new Date().getTime());
+      }
+
+      __testPropChanged(prop) {
+        console.log(prop, new Date().getTime());
       }
 
       /** @protected */
