@@ -832,11 +832,10 @@
           expect(select.opened).to.equal(true);
         });
 
-        it('should update value from selected one after edit mode exit', () => {
+        it('should update value and exit edit mode when item is selected', () => {
           const item = editor._overlay.querySelector('vaadin-item');
           const value = item.textContent;
           item.click();
-          tab(select);
           expect(column._getEditorComponent(cell)).to.not.be.ok;
           expect(cell._content.textContent).to.equal(value);
         });
