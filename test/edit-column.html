@@ -530,7 +530,6 @@
         });
 
         it('should fire active-item-changed on grid column', () => {
-          // Propagation of click should be stopped on edit colunm
           const spy = sinon.spy();
           grid.addEventListener('active-item-changed', spy);
 
