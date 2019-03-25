@@ -67,6 +67,14 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
     ready() {
       super.ready();
 
+      // Disable click/selection on edit column
+      this.$.scroller.addEventListener('click', e => {
+        const column = this.getEventContext(e).column;
+        if (this._isEditColumn(column)) {
+          e.stopPropagation();
+        }
+      }, true);
+
       // dblclick does not work on iOS Safari
       if (this._ios) {
         let firstClickTime;
