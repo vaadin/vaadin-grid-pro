@@ -206,8 +206,12 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
       _getEditorComponent(cell) {
         return this.editorType === 'custom' ?
-          cell._content.firstElementChild :
+          this._getCustomEditorComponent(cell) :
           cell._content.querySelector(this._getEditorTagName(cell));
+      }
+
+      _getCustomEditorComponent(cell) {
+        return Array.from(cell._content.querySelectorAll('*')).filter(node => node.validate || node.checkValidity)[0];
       }
 
       _getTagNameByType() {
