@@ -39,7 +39,8 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       static get properties() {
         return {
           /**
-           * Custom function for rendering the cell content in edit mode.
+           * Custom function for rendering the cell content in edit mode. The editor component
+           * attached to the `root` should implement `validate` or/and `checkValidity` methods.
            * Receives three arguments:
            *
            * - `root` The cell content DOM element. Append your editor component to it.
@@ -206,8 +207,12 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
       _getEditorComponent(cell) {
         return this.editorType === 'custom' ?
-          cell._content.firstElementChild :
+          this._getCustomEditorComponent(cell) :
           cell._content.querySelector(this._getEditorTagName(cell));
+      }
+
+      _getCustomEditorComponent(cell) {
+        return Array.from(cell._content.querySelectorAll('*')).filter(node => node.validate || node.checkValidity)[0];
       }
 
       _getTagNameByType() {
