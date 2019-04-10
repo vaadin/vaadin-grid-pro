@@ -142,7 +142,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       }
 
       _pathChanged(path) {
-        if (!this.path || this.path.length == 0) {
+        if (!path || path.length == 0) {
           throw new Error('You should specify the path for the edit column');
         }
       }
