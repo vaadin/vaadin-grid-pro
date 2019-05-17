@@ -230,7 +230,16 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       }
     }
 
-    _onEditorFocusOut() {
+    _onEditorFocusOut(e) {
+      const cellContent = this.__edited.cell.querySelector('slot').assignedNodes()[0];
+      const nodes = Array.from(cellContent.querySelectorAll('*'));
+
+      const targetName = e.relatedTarget && e.relatedTarget.localName;
+
+      if (nodes.indexOf(e.relatedTarget) > -1 || /vaadin-(?!dialog).*-overlay/.test(targetName)) {
+        return;
+      }
+
       // schedule stop on editor component focusout
       this._debouncerStopEdit = Polymer.Debouncer.debounce(
         this._debouncerStopEdit,
