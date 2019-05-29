@@ -250,9 +250,10 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       if (edited) {
         // detect focus moving to e.g. vaadin-select-overlay
         const overlay = Array.from(e.composedPath())
-          .filter(node => node.nodeType === Node.ELEMENT_NODE && /vaadin-(?!dialog).*-overlay/i.test(node.localName))[0];
+          .filter(node => node.nodeType === Node.ELEMENT_NODE && /^vaadin-(?!dialog).*-overlay$/i.test(node.localName))[0];
 
         if (overlay) {
+          overlay.addEventListener('vaadin-overlay-outside-click', this.__boundEditorFocusOut);
           this._cancelStopEdit();
         }
       }
@@ -318,11 +319,12 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
     _setCancelCellSwitch() {
       this.__cancelCellSwitch = true;
+      window.requestAnimationFrame(() => this.__cancelCellSwitch = false);
     }
 
     _switchEditCell(e) {
-      if (this.__cancelCellSwitch) {
-        this.__cancelCellSwitch = false;
+      if (this.__cancelCellSwitch ||
+          e.defaultPrevented && e.keyCode === 9) {
         return;
       }
 
