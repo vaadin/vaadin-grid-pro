@@ -70,6 +70,15 @@
       MockInteractions.keyDownOn(target, 13, [], 'Enter');
     }
 
+    // Mimic clicking the overlay
+    function clickOverlay(element) {
+      const focusout = new CustomEvent('focusout', {bubbles: true, composed: true});
+      element.dispatchEvent(focusout);
+
+      const focusin = new CustomEvent('focusin', {bubbles: true, composed: true});
+      element.$.overlay.dispatchEvent(focusin);
+    }
+
     ['default', 'template'].forEach(type => {
       describe(type, () => {
         let dialog, grid, dateCell;
@@ -99,15 +108,22 @@
           const datePicker = getCellEditor(dateCell).querySelector('vaadin-date-picker');
           datePicker.click();
 
-          // Mimic clicking the date-icker overlay
-          const focusout = new CustomEvent('focusout', {bubbles: true, composed: true});
-          datePicker.dispatchEvent(focusout);
-
-          const focusin = new CustomEvent('focusin', {bubbles: true, composed: true});
-          datePicker.$.overlay.dispatchEvent(focusin);
+          clickOverlay(datePicker);
           grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
 
           expect(getCellEditor(dateCell)).to.be.ok;
+        });
+
+        it('should stop editing on outside click from input related overlay', () => {
+          enter(dateCell);
+          const datePicker = getCellEditor(dateCell).querySelector('vaadin-date-picker');
+          datePicker.click();
+
+          clickOverlay(datePicker);
+          document.body.click();
+          grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
+
+          expect(getCellEditor(dateCell)).not.to.be.ok;
         });
 
         it('should stop editing when focusing overlay containing grid', () => {
