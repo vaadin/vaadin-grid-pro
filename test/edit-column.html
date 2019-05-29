@@ -44,6 +44,24 @@
     </template>
   </test-fixture>
 
+  <test-fixture id="custom">
+    <template>
+      <vaadin-grid-pro>
+        <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+        <vaadin-grid-pro-edit-column path="custom">
+          <template class="editor">
+            <div>
+              <input type="text">
+              <input type="text">
+            </div>
+          </template>
+        </vaadin-grid-pro-edit-column>
+        <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+        <vaadin-grid-column path="name"></vaadin-grid-column>
+      </vaadin-grid-pro>
+    </template>
+  </test-fixture>
+
   <script>
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -358,6 +376,31 @@
           const spy = sinon.spy(secondCell, 'focus');
           tab(input);
           expect(spy).to.be.calledOnce;
+        });
+      });
+
+      describe('wrapped fields in custom editor', () => {
+        let grid, inputWrapper;
+
+        beforeEach(() => {
+          grid = fixture('custom');
+          grid.items = getItems();
+          flushGrid(grid);
+        });
+
+        it('should not stop editing when focusing the input within the same cell', () => {
+          const customCell = getContainerCell(grid.$.items, 1, 1);
+          dblclick(customCell._content);
+          inputWrapper = getCellEditor(customCell);
+          const inputs = inputWrapper.querySelectorAll('input');
+
+          expect(inputWrapper).to.be.ok;
+
+          inputs[0].dispatchEvent(new CustomEvent('focusout', {bubbles: true, composed: true}));
+          inputs[1].dispatchEvent(new CustomEvent('focusin', {bubbles: true, composed: true}));
+          grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
+
+          expect(getCellEditor(customCell)).to.be.ok;
         });
       });
 
