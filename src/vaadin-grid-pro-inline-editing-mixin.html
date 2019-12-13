@@ -43,6 +43,10 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         singleCellEdit: {
           type: Boolean,
           notify: true // FIXME(yuriy-fix): needed by Flow counterpart
+        },
+
+        _disableEditing: {
+          type: Boolean
         }
       };
     }
@@ -70,6 +74,9 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
     ready() {
       // add listener before `vaadin-grid` interaction mode listener
       this.addEventListener('keydown', e => {
+        if (this._disableEditing) {
+          return;
+        }
         switch (e.keyCode) {
           case 27:
             this.__edited && this._stopEdit(true);
@@ -105,6 +112,9 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         let waitingSecondClick = false;
 
         this.addEventListener('click', e => {
+          if (this._disableEditing) {
+            return;
+          }
           if (!waitingSecondClick) {
             firstClickTime = (new Date()).getTime();
             waitingSecondClick = true;
@@ -123,6 +133,9 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         });
       } else {
         this.addEventListener('dblclick', e => {
+          if (this._disableEditing) {
+            return;
+          }
           this._enterEditFromEvent(e);
         });
       }
