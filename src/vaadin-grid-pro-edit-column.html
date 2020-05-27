@@ -53,7 +53,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
            *   - `rowData.expanded` Sublevel toggle state.
            *   - `rowData.level` Level of the tree represented with a horizontal offset of the toggle button.
            *   - `rowData.selected` Selected state.
-           * @type {!GridBodyRenderer | undefined}
+           * @type {!GridBodyRenderer | null | undefined}
            */
           editModeRenderer: Function,
 
@@ -290,7 +290,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
       /**
        * @param {!HTMLElement} editor
-       * @return {string | undefined}
+       * @return {unknown}
        * @protected
        */
       _getEditorValue(editor) {
