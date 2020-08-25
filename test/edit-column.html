@@ -435,6 +435,38 @@
           tab(input);
           expect(spy).to.be.calledOnce;
         });
+
+        it('should trigger "focusout" event from the editor when leaving focus on Tab', () => {
+          const firstCell = getContainerCell(grid.$.items, 1, 0);
+          dblclick(firstCell._content);
+          input = getCellEditor(firstCell);
+          const spy = sinon.spy();
+          input.addEventListener('focusout', spy);
+
+          input.value = 'abc';
+          tab(input);
+
+          expect(spy).to.be.calledOnce;
+          expect(spy.args[0][0].target).to.be.equal(input);
+
+          grid.removeEventListener('focusout', spy);
+        });
+
+        it('should trigger "focusout" event from the editor when leaving focus on Enter', () => {
+          const firstCell = getContainerCell(grid.$.items, 1, 0);
+          dblclick(firstCell._content);
+          input = getCellEditor(firstCell);
+          const spy = sinon.spy();
+          input.addEventListener('focusout', spy);
+
+          input.value = 'abc';
+          enter(input);
+
+          expect(spy).to.be.calledOnce;
+          expect(spy.args[0][0].target).to.be.equal(input);
+
+          grid.removeEventListener('focusout', spy);
+        });
       });
 
       describe('wrapped fields in custom editor', () => {
