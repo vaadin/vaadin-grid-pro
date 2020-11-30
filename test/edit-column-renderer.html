@@ -168,7 +168,7 @@
 
         describe('single click edit', () => {
 
-          beforeEach(() => grid.singleClickEdit = true);
+          beforeEach(() => grid.editOnClick = true);
 
           it('should enter edit mode on single click', () => {
             firstCell._content.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
@@ -176,7 +176,7 @@
           });
 
           it('should not enter edit mode on single click', () => {
-            grid.singleClickEdit = false;
+            grid.editOnClick = false;
             firstCell._content.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
             expect(getCellEditor(firstCell)).not.to.be.ok;
           });
