@@ -142,7 +142,9 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
         });
       } else {
         this.addEventListener('dblclick', e => {
-          this._enterEditFromEvent(e);
+          if (!this.editOnClick) {
+            this._enterEditFromEvent(e);
+          }
         });
       }
     }
