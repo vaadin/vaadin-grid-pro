@@ -39,9 +39,6 @@
     "@vaadin/vaadin-grid": "^5.7.0",
     "@vaadin/vaadin-checkbox": "^2.4.0"
   },
-  "scripts": {
-    "generate-typings": "gen-typescript-declarations --outDir . --verify"
-  },
   "devDependencies": {
     "@polymer/iron-component-page": "^4.0.0",
     "@polymer/iron-test-helpers": "^3.0.0",
