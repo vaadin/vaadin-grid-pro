@@ -1,9 +1,11 @@
-<link rel="import" href="../../../vaadin-lumo-styles/color.html">
-<link rel="import" href="../../../vaadin-lumo-styles/spacing.html">
-<link rel="import" href="../../../vaadin-lumo-styles/typography.html">
-<link rel="import" href="../../../vaadin-text-field/theme/lumo/vaadin-text-field.html">
+import '@vaadin/vaadin-lumo-styles/color.js';
+import '@vaadin/vaadin-lumo-styles/spacing.js';
+import '@vaadin/vaadin-lumo-styles/typography.js';
+import '@vaadin/vaadin-text-field/theme/lumo/vaadin-text-field.js';
+import '../../src/vaadin-grid-pro-edit-text-field.js';
+const $_documentContainer = document.createElement('template');
 
-<dom-module id="lumo-grid-pro-editor">
+$_documentContainer.innerHTML = `<dom-module id="lumo-grid-pro-editor">
   <template>
     <style>
       :host([theme~="grid-pro-editor"]) {
@@ -39,12 +41,10 @@
       }
     </style>
   </template>
-</dom-module>
-
-<dom-module id="lumo-grid-pro-edit-text-field" theme-for="vaadin-grid-pro-edit-text-field">
+</dom-module><dom-module id="lumo-grid-pro-edit-text-field" theme-for="vaadin-grid-pro-edit-text-field">
   <template>
     <style include="lumo-text-field lumo-grid-pro-editor">/* https://github.com/Polymer/tools/issues/408 */</style>
   </template>
-</dom-module>
+</dom-module>`;
 
-<link rel="import" href="../../src/vaadin-grid-pro-edit-text-field.html">
+document.head.appendChild($_documentContainer.content);

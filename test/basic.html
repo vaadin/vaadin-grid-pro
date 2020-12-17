@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <title>vaadin-grid-pro tests</title>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="../../test-fixture/test-fixture.html">
+  <script src="../../../wct-browser-legacy/browser.js"></script>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
 
-  <link rel="import" href="helpers.html">
-  <link rel="import" href="../vaadin-grid-pro.html">
+  <script type="module" src="./helpers.js"></script>
+  <script type="module" src="../vaadin-grid-pro.js"></script>
 </head>
 
 <body>
@@ -31,114 +31,120 @@
     </template>
   </test-fixture>
 
-  <script>
-    describe('basic features', () => {
-      let grid, column;
+  <script type="module">
+import '@polymer/test-fixture/test-fixture.js';
+import './helpers.js';
+import '../vaadin-grid-pro.js';
+import { GridElement } from '@vaadin/vaadin-grid/src/vaadin-grid.js';
+import { GridColumnElement } from '@vaadin/vaadin-grid/src/vaadin-grid-column.js';
+import { Base } from '@polymer/polymer/polymer-legacy.js';
+describe('basic features', () => {
+  let grid, column;
 
-      beforeEach(() => {
-        grid = fixture('default');
-        column = grid.querySelector('vaadin-grid-column');
-        grid.dataProvider = infiniteDataProvider;
-        flushGrid(grid);
+  beforeEach(() => {
+    grid = fixture('default');
+    column = grid.querySelector('vaadin-grid-column');
+    grid.dataProvider = infiniteDataProvider;
+    flushGrid(grid);
+  });
+
+  it('should not expose class name globally', function() {
+    expect(window.GridProElement).not.to.be.ok;
+  });
+
+  it('should extend GridElement', () => {
+    expect(grid instanceof GridElement).to.be.true;
+  });
+
+  it('should be possible to use grid modules for defining content and layout', () => {
+    expect(column instanceof GridColumnElement).to.be.true;
+    expect(grid.querySelectorAll('vaadin-grid-cell-content').length).to.above(0);
+  });
+
+  it('should properly define host grid', () => {
+    expect(column._findHostGrid().localName).to.be.equal('vaadin-grid-pro');
+  });
+
+});
+
+describe('missing imports', () => {
+  let grid;
+
+  beforeEach(() => {
+    grid = fixture('empty');
+  });
+
+  const describeMissingImportWarning = (elementName, assertPath) => {
+    describe(`import warning for ${elementName}`, () => {
+      it('should not warn if not in use', () => {
+        sinon.stub(console, 'warn');
+
+        grid._observer && grid._observer.flush && grid._observer.flush();
+        grid._debouncerCheckImports.flush();
+        expect(console.warn.called).to.be.false;
+
+        console.warn.restore();
       });
 
-      it('should not expose class name globally', function() {
-        expect(window.GridProElement).not.to.be.ok;
+      it('should warn once if in use', () => {
+        sinon.stub(console, 'warn');
+
+        grid.appendChild(document.createElement(elementName));
+        grid.appendChild(document.createElement(elementName));
+        grid._observer && grid._observer.flush && grid._observer.flush();
+        grid._debouncerCheckImports.flush();
+
+        expect(console.warn.callCount).to.equal(1);
+
+        console.warn.restore();
       });
 
-      it('should extend GridElement', () => {
-        expect(grid instanceof Vaadin.GridElement).to.be.true;
+      it('should warn and not throw after adding', () => {
+        sinon.stub(console, 'warn');
+
+        grid.appendChild(document.createElement(elementName));
+        grid._observer && grid._observer.flush && grid._observer.flush();
+        grid._debouncerCheckImports.flush();
+
+        let error;
+        try {
+          grid.dataProvider = infiniteDataProvider;
+          flushGrid(grid);
+        } catch (e) {
+          error = e;
+        } finally {
+          expect(console.warn.called).to.be.true;
+          console.warn.restore();
+        }
+
+        expect(error).to.not.be.instanceOf(Error);
       });
 
-      it('should be possible to use grid modules for defining content and layout', () => {
-        expect(column instanceof Vaadin.GridColumnElement).to.be.true;
-        expect(grid.querySelectorAll('vaadin-grid-cell-content').length).to.above(0);
-      });
-
-      it('should properly define host grid', () => {
-        expect(column._findHostGrid().localName).to.be.equal('vaadin-grid-pro');
-      });
-
-    });
-
-    describe('missing imports', () => {
-      let grid;
-
-      beforeEach(() => {
-        grid = fixture('empty');
-      });
-
-      const describeMissingImportWarning = (elementName, assertPath) => {
-        describe(`import warning for ${elementName}`, () => {
-          it('should not warn if not in use', () => {
+      it('should not warn for present import', (done) => {
+        if (window.isV2()) {
+          Base.importHref(`../${elementName}.html`, () => {
             sinon.stub(console, 'warn');
 
+            grid.appendChild(document.createElement(elementName));
             grid._observer && grid._observer.flush && grid._observer.flush();
             grid._debouncerCheckImports.flush();
+
             expect(console.warn.called).to.be.false;
-
             console.warn.restore();
+            done();
           });
+        } else {
+          // importHref is removed in Polymer 3 stable release, skip the test.
+          done();
+        }
+      });
 
-          it('should warn once if in use', () => {
-            sinon.stub(console, 'warn');
-
-            grid.appendChild(document.createElement(elementName));
-            grid.appendChild(document.createElement(elementName));
-            grid._observer && grid._observer.flush && grid._observer.flush();
-            grid._debouncerCheckImports.flush();
-
-            expect(console.warn.callCount).to.equal(1);
-
-            console.warn.restore();
-          });
-
-          it('should warn and not throw after adding', () => {
-            sinon.stub(console, 'warn');
-
-            grid.appendChild(document.createElement(elementName));
-            grid._observer && grid._observer.flush && grid._observer.flush();
-            grid._debouncerCheckImports.flush();
-
-            let error;
-            try {
-              grid.dataProvider = infiniteDataProvider;
-              flushGrid(grid);
-            } catch (e) {
-              error = e;
-            } finally {
-              expect(console.warn.called).to.be.true;
-              console.warn.restore();
-            }
-
-            expect(error).to.not.be.instanceOf(Error);
-          });
-
-          it('should not warn for present import', (done) => {
-            if (window.isV2()) {
-              Polymer.Base.importHref(`../${elementName}.html`, () => {
-                sinon.stub(console, 'warn');
-
-                grid.appendChild(document.createElement(elementName));
-                grid._observer && grid._observer.flush && grid._observer.flush();
-                grid._debouncerCheckImports.flush();
-
-                expect(console.warn.called).to.be.false;
-                console.warn.restore();
-                done();
-              });
-            } else {
-              // importHref is removed in Polymer 3 stable release, skip the test.
-              done();
-            }
-          });
-
-        });
-      };
-
-      describeMissingImportWarning('vaadin-grid-pro-edit-column');
     });
-  </script>
+  };
+
+  describeMissingImportWarning('vaadin-grid-pro-edit-column');
+});
+</script>
 
 </body>
 

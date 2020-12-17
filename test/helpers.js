@@ -1,0 +1,125 @@
+import { flush as flush$0 } from '@polymer/polymer/lib/utils/flush.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+window.isV2 = () => window['Polymer'] && window['Polymer']['version'] && window['Polymer']['version'].indexOf('2') === 0;
+
+window.infiniteDataProvider = (params, callback) => {
+  callback(Array.apply(null, Array(params.pageSize)).map((item, index) => {
+    const count = params.page * params.pageSize + index;
+    return {
+      name: 'foo' + count,
+      age: count
+    };
+  }));
+};
+
+window.dragStart = (source) => {
+  let grid = source.parentElement;
+  while (grid) {
+    if (grid.localName === 'vaadin-grid-pro') {
+      grid._touchDevice = false;
+    }
+    grid = grid.parentNode || grid.host;
+  }
+  const sourceRect = source.getBoundingClientRect();
+  fire('track', {
+    x: Math.round(sourceRect.left + sourceRect.width / 2),
+    y: Math.round(sourceRect.top + sourceRect.height / 2),
+    state: 'start'
+  }, {
+    node: source,
+    bubbles: true
+  });
+};
+
+window.dragOver = (source, target, clientX) => {
+  dragStart(source);
+  const targetRect = target.getBoundingClientRect();
+  fire('track', {
+    x: Math.round(clientX || targetRect.left + targetRect.width / 2),
+    y: Math.round(targetRect.top + targetRect.height / 2),
+    state: 'track'
+  }, {
+    node: source,
+    bubbles: true
+  });
+};
+
+window.dragAndDropOver = (source, target) => {
+  dragOver(source, target);
+  fire('track', {
+    x: 0,
+    y: 0,
+    state: 'end'
+  }, {
+    node: source,
+    bubbles: true
+  });
+};
+
+window.fire = (type, detail, options) => {
+  options = options || {};
+  detail = (detail === null || detail === undefined) ? {} : detail;
+  const event = new Event(type, {
+    bubbles: options.bubbles === undefined ? true : options.bubbles,
+    cancelable: Boolean(options.cancelable),
+    composed: options.composed === undefined ? true : options.composed
+  });
+  event.detail = detail;
+  const node = options.node || window;
+  node.dispatchEvent(event);
+  return event;
+};
+
+window.flushGrid = (grid) => {
+  grid._observer.flush();
+  if (grid._debounceScrolling) {
+    grid._debounceScrolling.flush();
+  }
+  if (grid._debounceScrollPeriod) {
+    grid._debounceScrollPeriod.flush();
+  }
+  flush$0();
+  if (grid._debouncerLoad) {
+    grid._debouncerLoad.flush();
+  }
+  if (grid._debounceOverflow) {
+    grid._debounceOverflow.flush();
+  }
+  while (grid._debounceIncreasePool) {
+    grid._debounceIncreasePool.flush();
+    grid._debounceIncreasePool = null;
+    flush$0();
+  }
+};
+
+window.getRows = (container) => {
+  return container.querySelectorAll('tr');
+};
+
+window.getRowCells = (row) => {
+  return Array.prototype.slice.call(dom(row).querySelectorAll('[part~="cell"]'));
+};
+
+window.getCellContent = (cell) => {
+  return cell ? cell.querySelector('slot').assignedNodes()[0] : null;
+};
+
+window.getContainerCellContent = (container, row, col) => {
+  return getCellContent(getContainerCell(container, row, col));
+};
+
+window.getContainerCell = (container, row, col) => {
+  const rows = getRows(container);
+  const cells = getRowCells(rows[row]);
+  return cells[col];
+};
+
+window.getCellEditor = (cell) => {
+  return cell._column._getEditorComponent(cell);
+};
+
+window.getNativeInput = (editor) => {
+  return editor.shadowRoot.querySelector('input');
+};
+
+window.flatMap = (array, mapper) => [].concat(...array.map(mapper));

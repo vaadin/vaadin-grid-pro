@@ -3,14 +3,15 @@
 <head lang="en">
   <meta charset="UTF-8">
   <title></title>
-  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  <script>
-    const theme = window.location.search.replace(/.*theme=(\w+).*/, '$1') || 'lumo';
-    document.write('<link rel="import" href="../../theme/' + theme + '/vaadin-grid-pro.html">');
-    document.write('<link rel="import" href="../../theme/' + theme + '/vaadin-grid-pro-edit-column.html">');
-  </script>
+  <script src="../../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script type="module">
+import '../helpers.js';
+const theme = window.location.search.replace(/.*theme=(\w+).*/, '$1') || 'lumo';
+document.write('<link rel="import" href="../../theme/' + theme + '/vaadin-grid-pro.html">');
+document.write('<link rel="import" href="../../theme/' + theme + '/vaadin-grid-pro-edit-column.html">');
+</script>
 
-  <link href="../helpers.html" rel="import">
+  <script type="module" src="../helpers.js"></script>
 </head>
 
 <body>
@@ -29,13 +30,12 @@
   <vaadin-grid-pro>
     <vaadin-grid-pro-edit-column path="name.first"></vaadin-grid-pro-edit-column>
   </vaadin-grid-pro>
-  <script>
-    window.addEventListener('WebComponentsReady', function() {
-      const grid = document.querySelector('vaadin-grid-pro');
-      grid.items = Vaadin.GridDemo.users;
-      const cell = getContainerCell(grid.$.items, 0, 0);
-      cell._content.dispatchEvent(new CustomEvent('dblclick', {bubbles: true}));
-      window.webComponentsAreReady = true;
-    });
-  </script>
+  <script type="module">
+import '../helpers.js';
+const grid = document.querySelector('vaadin-grid-pro');
+grid.items = Vaadin.GridDemo.users;
+const cell = getContainerCell(grid.$.items, 0, 0);
+cell._content.dispatchEvent(new CustomEvent('dblclick', {bubbles: true}));
+window.webComponentsAreReady = true;
+</script>
 </div>

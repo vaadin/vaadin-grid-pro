@@ -1,6 +1,8 @@
-<link rel="import" href="../../../vaadin-text-field/theme/material/vaadin-text-field.html">
+import '@vaadin/vaadin-text-field/theme/material/vaadin-text-field.js';
+import '../../src/vaadin-grid-pro-edit-text-field.js';
+const $_documentContainer = document.createElement('template');
 
-<dom-module id="material-grid-pro-edit-text-field" theme-for="vaadin-grid-pro-edit-text-field">
+$_documentContainer.innerHTML = `<dom-module id="material-grid-pro-edit-text-field" theme-for="vaadin-grid-pro-edit-text-field">
   <template>
     <style include="material-text-field">
       :host([theme~="grid-pro-editor"]) {
@@ -18,6 +20,6 @@
       }
     </style>
   </template>
-</dom-module>
+</dom-module>`;
 
-<link rel="import" href="../../src/vaadin-grid-pro-edit-text-field.html">
+document.head.appendChild($_documentContainer.content);

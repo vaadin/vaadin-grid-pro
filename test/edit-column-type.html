@@ -7,15 +7,15 @@
   <title>edit-column test</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-  <script src="../../web-component-tester/browser.js"></script>
-  <script src="../../iron-test-helpers/mock-interactions.js"></script>
-  <link rel="import" href="../../test-fixture/test-fixture.html">
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+  <script src="../../../wct-browser-legacy/browser.js"></script>
+  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
+  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
 
-  <link rel="import" href="helpers.html">
-  <link rel="import" href="not-animated-styles.html">
-  <link rel="import" href="../vaadin-grid-pro.html">
-  <link rel="import" href="../vaadin-grid-pro-edit-column.html">
+  <script type="module" src="./helpers.js"></script>
+  <script type="module" src="./not-animated-styles.js"></script>
+  <script type="module" src="../vaadin-grid-pro.js"></script>
+  <script type="module" src="../vaadin-grid-pro-edit-column.js"></script>
 </head>
 
 <body>>
@@ -53,333 +53,342 @@
     </template>
   </test-fixture>
 
-  <script>
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  <script type="module">
+import '@polymer/test-fixture/test-fixture.js';
+import './helpers.js';
+import './not-animated-styles.js';
+import '../vaadin-grid-pro.js';
+import '../vaadin-grid-pro-edit-column.js';
+import { TextFieldElement } from '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
+import { SelectElement } from '@vaadin/vaadin-select/src/vaadin-select.js';
+import { CheckboxElement } from '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    function getItems() {
-      return [
-        {name: 'foo', age: 20, married: true, title: 'mrs'},
-        {name: 'bar', age: 30, married: false, title: 'ms'},
-        {name: 'baz', age: 40, married: false, title: 'mr'}
-      ];
-    }
+function getItems() {
+  return [
+    {name: 'foo', age: 20, married: true, title: 'mrs'},
+    {name: 'bar', age: 30, married: false, title: 'ms'},
+    {name: 'baz', age: 40, married: false, title: 'mr'}
+  ];
+}
 
-    function dblclick(target) {
-      if (isIOS) {
-        target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-        target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-      } else {
-        target.dispatchEvent(new CustomEvent('dblclick', {bubbles: true, composed: true}));
-      }
-    }
+function dblclick(target) {
+  if (isIOS) {
+    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
+    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
+  } else {
+    target.dispatchEvent(new CustomEvent('dblclick', {bubbles: true, composed: true}));
+  }
+}
 
-    function up(target) {
-      MockInteractions.keyDownOn(target, 38, [], 'ArrowUp');
-    }
+function up(target) {
+  MockInteractions.keyDownOn(target, 38, [], 'ArrowUp');
+}
 
-    function down(target) {
-      MockInteractions.keyDownOn(target, 40, [], 'ArrowDown');
-    }
+function down(target) {
+  MockInteractions.keyDownOn(target, 40, [], 'ArrowDown');
+}
 
-    function space(target) {
-      MockInteractions.keyDownOn(target, 32, [], ' ');
-    }
+function space(target) {
+  MockInteractions.keyDownOn(target, 32, [], ' ');
+}
 
-    function enter(target) {
-      MockInteractions.keyDownOn(target, 13, [], 'Enter');
-    }
+function enter(target) {
+  MockInteractions.keyDownOn(target, 13, [], 'Enter');
+}
 
-    function keyDownChar(target, letter, modifier) {
-      MockInteractions.keyDownOn(target, letter.charCodeAt(0), modifier, letter);
-    }
+function keyDownChar(target, letter, modifier) {
+  MockInteractions.keyDownOn(target, letter.charCodeAt(0), modifier, letter);
+}
 
-    describe('edit column editor type', () => {
+describe('edit column editor type', () => {
 
-      describe('specified editor type with representation template', () => {
-        let grid, cell, column, editor;
+  describe('specified editor type with representation template', () => {
+    let grid, cell, column, editor;
 
-        beforeEach(() => {
-          grid = fixture('template-editor-type');
-          grid.items = getItems();
-          flushGrid(grid);
-        });
+    beforeEach(() => {
+      grid = fixture('template-editor-type');
+      grid.items = getItems();
+      flushGrid(grid);
+    });
 
-        it('should render the textfield to cell with text editor type specified', () => {
-          column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[0];
-          cell = getContainerCell(grid.$.items, 0, 0);
-          dblclick(cell._content);
-          editor = column._getEditorComponent(cell);
-          expect(editor instanceof Vaadin.TextFieldElement).to.equal(true);
-        });
+    it('should render the textfield to cell with text editor type specified', () => {
+      column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[0];
+      cell = getContainerCell(grid.$.items, 0, 0);
+      dblclick(cell._content);
+      editor = column._getEditorComponent(cell);
+      expect(editor instanceof TextFieldElement).to.equal(true);
+    });
 
-        it('should render the select to cell with select editor type specified', () => {
-          column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[1];
-          cell = getContainerCell(grid.$.items, 0, 1);
-          dblclick(cell._content);
-          editor = column._getEditorComponent(cell);
-          expect(editor instanceof Vaadin.SelectElement).to.equal(true);
-        });
+    it('should render the select to cell with select editor type specified', () => {
+      column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[1];
+      cell = getContainerCell(grid.$.items, 0, 1);
+      dblclick(cell._content);
+      editor = column._getEditorComponent(cell);
+      expect(editor instanceof SelectElement).to.equal(true);
+    });
 
-        it('should render the checkbox to cell with text checkbox type specified', () => {
-          column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[2];
-          cell = getContainerCell(grid.$.items, 0, 2);
-          dblclick(cell._content);
-          editor = column._getEditorComponent(cell);
-          expect(editor instanceof Vaadin.CheckboxElement).to.equal(true);
-        });
+    it('should render the checkbox to cell with text checkbox type specified', () => {
+      column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[2];
+      cell = getContainerCell(grid.$.items, 0, 2);
+      dblclick(cell._content);
+      editor = column._getEditorComponent(cell);
+      expect(editor instanceof CheckboxElement).to.equal(true);
+    });
+  });
+
+  describe('checkbox', () => {
+    let grid, cell, column, editor;
+
+    beforeEach(() => {
+      grid = fixture('editor-type');
+      grid.items = getItems();
+      column = grid.firstElementChild;
+      column.editorType = 'checkbox';
+      flushGrid(grid);
+      cell = getContainerCell(grid.$.items, 0, 0);
+    });
+
+    it('should render the checkbox to cell in edit mode', () => {
+      dblclick(cell._content);
+      editor = column._getEditorComponent(cell);
+      expect(editor instanceof CheckboxElement).to.equal(true);
+      expect(editor.checked).to.be.equal(grid.items[0].married);
+    });
+
+    it('should set focus-ring on the checkbox', () => {
+      dblclick(cell._content);
+      editor = column._getEditorComponent(cell);
+      expect(editor.hasAttribute('focus-ring')).to.be.true;
+    });
+
+    it('should update value from checkbox checked after edit mode exit', () => {
+      dblclick(cell._content);
+      editor = column._getEditorComponent(cell);
+      editor.click();
+      enter(editor);
+      expect(cell._content.textContent.trim()).to.equal('false');
+      expect(grid.items[0].married).to.equal(false);
+    });
+  });
+
+  describe('select', () => {
+    let grid, cell, column, editor;
+
+    const nextRender = (elem) => {
+      return new Promise(resolve => {
+        afterNextRender(elem, resolve);
       });
+    };
 
-      describe('checkbox', () => {
-        let grid, cell, column, editor;
-
-        beforeEach(() => {
-          grid = fixture('editor-type');
-          grid.items = getItems();
-          column = grid.firstElementChild;
-          column.editorType = 'checkbox';
-          flushGrid(grid);
-          cell = getContainerCell(grid.$.items, 0, 0);
-        });
-
-        it('should render the checkbox to cell in edit mode', () => {
-          dblclick(cell._content);
-          editor = column._getEditorComponent(cell);
-          expect(editor instanceof Vaadin.CheckboxElement).to.equal(true);
-          expect(editor.checked).to.be.equal(grid.items[0].married);
-        });
-
-        it('should set focus-ring on the checkbox', () => {
-          dblclick(cell._content);
-          editor = column._getEditorComponent(cell);
-          expect(editor.hasAttribute('focus-ring')).to.be.true;
-        });
-
-        it('should update value from checkbox checked after edit mode exit', () => {
-          dblclick(cell._content);
-          editor = column._getEditorComponent(cell);
-          editor.click();
-          enter(editor);
-          expect(cell._content.textContent.trim()).to.equal('false');
-          expect(grid.items[0].married).to.equal(false);
-        });
-      });
-
-      describe('select', () => {
-        let grid, cell, column, editor;
-
-        const nextRender = (elem) => {
-          return new Promise(resolve => {
-            Polymer.RenderStatus.afterNextRender(elem, resolve);
-          });
+    const onceOpened = elem => {
+      return new Promise(resolve => {
+        const listener = e => {
+          if (e.detail.value) {
+            elem.removeEventListener('opened-changed', listener);
+            resolve();
+          }
         };
+        elem.addEventListener('opened-changed', listener);
+      });
+    };
 
-        const onceOpened = elem => {
-          return new Promise(resolve => {
-            const listener = e => {
-              if (e.detail.value) {
-                elem.removeEventListener('opened-changed', listener);
-                resolve();
-              }
-            };
-            elem.addEventListener('opened-changed', listener);
-          });
-        };
-
-        describe('with options', () => {
-          beforeEach(done => {
-            grid = fixture('editor-type');
-            grid.items = getItems();
-            column = grid.querySelector('[path="title"]');
-            column.editorType = 'select';
-            column.editorOptions = ['mr', 'mrs', 'ms'];
-            flushGrid(grid);
-            cell = getContainerCell(grid.$.items, 0, 1);
-            enter(cell._content);
-            editor = getCellEditor(cell);
-            onceOpened(editor).then(() => done());
-          });
-
-          it('should render the opened select to cell in edit mode', () => {
-            expect(editor instanceof Vaadin.SelectElement).to.equal(true);
-            expect(editor.value).to.be.equal('mrs');
-            expect(editor.opened).to.equal(true);
-          });
-
-          it('should open the select and stop focusout on editor click', async() => {
-            editor.opened = false;
-            editor.focusElement.click();
-            const focusout = new CustomEvent('focusout', {bubbles: true, composed: true});
-            editor.dispatchEvent(focusout);
-            const focusin = new CustomEvent('focusin', {bubbles: true, composed: true});
-            editor._overlayElement.querySelector('vaadin-item').dispatchEvent(focusin);
-            grid._flushStopEdit();
-            await nextRender(editor._menuElement);
-            expect(editor.opened).to.equal(true);
-          });
-
-          it('should close the select and exit edit mode on outside click', () => {
-            document.body.click();
-            expect(editor.opened).to.equal(false);
-          });
-
-          it('should open the select on space key', async() => {
-            editor.opened = false;
-            space(editor.focusElement);
-            await nextRender(editor._menuElement);
-            expect(editor.opened).to.equal(true);
-          });
-
-          it('should open the select on arrow down key', async() => {
-            editor.opened = false;
-            down(editor.focusElement);
-            await nextRender(editor._menuElement);
-            expect(editor.opened).to.equal(true);
-          });
-
-          it('should open the select on arrow up key', async() => {
-            editor.opened = false;
-            up(editor.focusElement);
-            await nextRender(editor._menuElement);
-            expect(editor.opened).to.equal(true);
-          });
-
-          it('should update value and exit edit mode when item is selected', () => {
-            grid.singleCellEdit = true;
-            const item = editor._overlayElement.querySelector('vaadin-item');
-            const value = item.textContent;
-            const spy = sinon.spy(cell, 'focus');
-            item.click();
-            expect(column._getEditorComponent(cell)).to.not.be.ok;
-            expect(cell._content.textContent).to.equal(value);
-            expect(spy).to.be.calledOnce;
-          });
-
-          it('should work with `enterNextRow`', async() => {
-            grid.enterNextRow = true;
-            const item = editor._overlayElement.querySelector('vaadin-item');
-            enter(item);
-            item.click();
-            expect(column._getEditorComponent(cell)).to.not.be.ok;
-            const secondCell = getContainerCell(grid.$.items, 1, 1);
-            expect(getCellEditor(secondCell)).to.be.ok;
-          });
-        });
-
-        describe('without options', () => {
-          beforeEach(done => {
-            grid = fixture('editor-type');
-            grid.items = getItems();
-            column = grid.querySelector('[path="title"]');
-            column.editorType = 'select';
-            column.editorOptions = [];
-            flushGrid(grid);
-            cell = getContainerCell(grid.$.items, 0, 1);
-            enter(cell._content);
-            editor = getCellEditor(cell);
-            Polymer.RenderStatus.afterNextRender(editor, () => done());
-          });
-
-          it('should render the closed select to cell in edit mode', () => {
-            expect(editor instanceof Vaadin.SelectElement).to.equal(true);
-            expect(editor.value).to.be.equal('mrs');
-            expect(editor.opened).to.equal(false);
-          });
-
-          it('should not throw when moving focus out of the select', () => {
-            const evt = new CustomEvent('focusout', {bubbles: true, composed: true});
-            editor.dispatchEvent(evt);
-            grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
-            expect(column._getEditorComponent(cell)).to.not.be.ok;
-          });
-
-          it('should warn about missing options on enter key', async() => {
-            sinon.stub(console, 'warn');
-            enter(editor.focusElement);
-            expect(console.warn.called).to.be.true;
-            console.warn.restore();
-          });
-
-          it('should warn about missing options on space key', async() => {
-            sinon.stub(console, 'warn');
-            space(editor.focusElement);
-            expect(console.warn.called).to.be.true;
-            console.warn.restore();
-          });
-
-          it('should warn about missing options on arrow down key', async() => {
-            sinon.stub(console, 'warn');
-            down(editor.focusElement);
-            expect(console.warn.called).to.be.true;
-            console.warn.restore();
-          });
-
-          it('should warn about missing options on arrow up key', async() => {
-            sinon.stub(console, 'warn');
-            up(editor.focusElement);
-            expect(console.warn.called).to.be.true;
-            console.warn.restore();
-          });
-        });
+    describe('with options', () => {
+      beforeEach(done => {
+        grid = fixture('editor-type');
+        grid.items = getItems();
+        column = grid.querySelector('[path="title"]');
+        column.editorType = 'select';
+        column.editorOptions = ['mr', 'mrs', 'ms'];
+        flushGrid(grid);
+        cell = getContainerCell(grid.$.items, 0, 1);
+        enter(cell._content);
+        editor = getCellEditor(cell);
+        onceOpened(editor).then(() => done());
       });
 
-      describe('edit on typing', () => {
-        let grid, cell, columns, column, editor;
+      it('should render the opened select to cell in edit mode', () => {
+        expect(editor instanceof SelectElement).to.equal(true);
+        expect(editor.value).to.be.equal('mrs');
+        expect(editor.opened).to.equal(true);
+      });
 
-        beforeEach(() => {
-          grid = fixture('editor-type');
-          grid.items = getItems();
-          flushGrid(grid);
-          columns = grid._columnTree[0];
-        });
+      it('should open the select and stop focusout on editor click', async() => {
+        editor.opened = false;
+        editor.focusElement.click();
+        const focusout = new CustomEvent('focusout', {bubbles: true, composed: true});
+        editor.dispatchEvent(focusout);
+        const focusin = new CustomEvent('focusin', {bubbles: true, composed: true});
+        editor._overlayElement.querySelector('vaadin-item').dispatchEvent(focusin);
+        grid._flushStopEdit();
+        await nextRender(editor._menuElement);
+        expect(editor.opened).to.equal(true);
+      });
 
-        it('should start edit on typing if numeric key pressed', () => {
-          column = grid.querySelector('[path="age"]');
-          cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
-          keyDownChar(cell._content, '1');
-          editor = column._getEditorComponent(cell);
-          expect(editor).to.be.ok;
-        });
+      it('should close the select and exit edit mode on outside click', () => {
+        document.body.click();
+        expect(editor.opened).to.equal(false);
+      });
 
-        it('should start edit on typing if character key pressed', () => {
-          column = grid.querySelector('[path="name"]');
-          cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
-          keyDownChar(cell._content, 'a');
-          editor = column._getEditorComponent(cell);
-          expect(editor).to.be.ok;
-        });
+      it('should open the select on space key', async() => {
+        editor.opened = false;
+        space(editor.focusElement);
+        await nextRender(editor._menuElement);
+        expect(editor.opened).to.equal(true);
+      });
 
-        it('should not start edit on typing when editor type set to checkbox', () => {
-          column = grid.querySelector('[path="married"]');
-          cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
-          column.editorType = 'checkbox';
-          keyDownChar(cell._content, 'a');
-          editor = column._getEditorComponent(cell);
-          expect(editor).to.be.not.ok;
-        });
+      it('should open the select on arrow down key', async() => {
+        editor.opened = false;
+        down(editor.focusElement);
+        await nextRender(editor._menuElement);
+        expect(editor.opened).to.equal(true);
+      });
 
-        it('should not start edit on typing when editor type set to select', () => {
-          column = grid.querySelector('[path="title"]');
-          cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
-          column.editorType = 'select';
-          column.editorOptions = ['mr', 'mrs', 'ms'];
-          keyDownChar(cell._content, 'a');
-          editor = column._getEditorComponent(cell);
-          expect(editor).to.be.not.ok;
-        });
+      it('should open the select on arrow up key', async() => {
+        editor.opened = false;
+        up(editor.focusElement);
+        await nextRender(editor._menuElement);
+        expect(editor.opened).to.equal(true);
+      });
 
-        it('should not start edit on typing when editor type set to custom', () => {
-          column = grid.querySelector('[path="married"]');
-          cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
-          column.editModeRenderer = root => {
-            root.innerHTML = '<input type="checkbox">';
-          };
-          keyDownChar(cell._content, 'a');
-          editor = column._getEditorComponent(cell);
-          expect(editor).to.be.not.ok;
-        });
+      it('should update value and exit edit mode when item is selected', () => {
+        grid.singleCellEdit = true;
+        const item = editor._overlayElement.querySelector('vaadin-item');
+        const value = item.textContent;
+        const spy = sinon.spy(cell, 'focus');
+        item.click();
+        expect(column._getEditorComponent(cell)).to.not.be.ok;
+        expect(cell._content.textContent).to.equal(value);
+        expect(spy).to.be.calledOnce;
+      });
+
+      it('should work with `enterNextRow`', async() => {
+        grid.enterNextRow = true;
+        const item = editor._overlayElement.querySelector('vaadin-item');
+        enter(item);
+        item.click();
+        expect(column._getEditorComponent(cell)).to.not.be.ok;
+        const secondCell = getContainerCell(grid.$.items, 1, 1);
+        expect(getCellEditor(secondCell)).to.be.ok;
       });
     });
-  </script>
+
+    describe('without options', () => {
+      beforeEach(done => {
+        grid = fixture('editor-type');
+        grid.items = getItems();
+        column = grid.querySelector('[path="title"]');
+        column.editorType = 'select';
+        column.editorOptions = [];
+        flushGrid(grid);
+        cell = getContainerCell(grid.$.items, 0, 1);
+        enter(cell._content);
+        editor = getCellEditor(cell);
+        afterNextRender(editor, () => done());
+      });
+
+      it('should render the closed select to cell in edit mode', () => {
+        expect(editor instanceof SelectElement).to.equal(true);
+        expect(editor.value).to.be.equal('mrs');
+        expect(editor.opened).to.equal(false);
+      });
+
+      it('should not throw when moving focus out of the select', () => {
+        const evt = new CustomEvent('focusout', {bubbles: true, composed: true});
+        editor.dispatchEvent(evt);
+        grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
+        expect(column._getEditorComponent(cell)).to.not.be.ok;
+      });
+
+      it('should warn about missing options on enter key', async() => {
+        sinon.stub(console, 'warn');
+        enter(editor.focusElement);
+        expect(console.warn.called).to.be.true;
+        console.warn.restore();
+      });
+
+      it('should warn about missing options on space key', async() => {
+        sinon.stub(console, 'warn');
+        space(editor.focusElement);
+        expect(console.warn.called).to.be.true;
+        console.warn.restore();
+      });
+
+      it('should warn about missing options on arrow down key', async() => {
+        sinon.stub(console, 'warn');
+        down(editor.focusElement);
+        expect(console.warn.called).to.be.true;
+        console.warn.restore();
+      });
+
+      it('should warn about missing options on arrow up key', async() => {
+        sinon.stub(console, 'warn');
+        up(editor.focusElement);
+        expect(console.warn.called).to.be.true;
+        console.warn.restore();
+      });
+    });
+  });
+
+  describe('edit on typing', () => {
+    let grid, cell, columns, column, editor;
+
+    beforeEach(() => {
+      grid = fixture('editor-type');
+      grid.items = getItems();
+      flushGrid(grid);
+      columns = grid._columnTree[0];
+    });
+
+    it('should start edit on typing if numeric key pressed', () => {
+      column = grid.querySelector('[path="age"]');
+      cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
+      keyDownChar(cell._content, '1');
+      editor = column._getEditorComponent(cell);
+      expect(editor).to.be.ok;
+    });
+
+    it('should start edit on typing if character key pressed', () => {
+      column = grid.querySelector('[path="name"]');
+      cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
+      keyDownChar(cell._content, 'a');
+      editor = column._getEditorComponent(cell);
+      expect(editor).to.be.ok;
+    });
+
+    it('should not start edit on typing when editor type set to checkbox', () => {
+      column = grid.querySelector('[path="married"]');
+      cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
+      column.editorType = 'checkbox';
+      keyDownChar(cell._content, 'a');
+      editor = column._getEditorComponent(cell);
+      expect(editor).to.be.not.ok;
+    });
+
+    it('should not start edit on typing when editor type set to select', () => {
+      column = grid.querySelector('[path="title"]');
+      cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
+      column.editorType = 'select';
+      column.editorOptions = ['mr', 'mrs', 'ms'];
+      keyDownChar(cell._content, 'a');
+      editor = column._getEditorComponent(cell);
+      expect(editor).to.be.not.ok;
+    });
+
+    it('should not start edit on typing when editor type set to custom', () => {
+      column = grid.querySelector('[path="married"]');
+      cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
+      column.editModeRenderer = root => {
+        root.innerHTML = '<input type="checkbox">';
+      };
+      keyDownChar(cell._content, 'a');
+      editor = column._getEditorComponent(cell);
+      expect(editor).to.be.not.ok;
+    });
+  });
+});
+</script>
 
 </body>
 

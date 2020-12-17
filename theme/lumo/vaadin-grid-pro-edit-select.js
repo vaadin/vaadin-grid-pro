@@ -1,9 +1,11 @@
-<link rel="import" href="../../../vaadin-select/theme/lumo/vaadin-select.html">
-<link rel="import" href="../../../vaadin-list-box/theme/lumo/vaadin-list-box.html">
-<link rel="import" href="../../../vaadin-item/theme/lumo/vaadin-item.html">
-<link rel="import" href="vaadin-grid-pro-edit-text-field.html">
+import '@vaadin/vaadin-select/theme/lumo/vaadin-select.js';
+import '@vaadin/vaadin-list-box/theme/lumo/vaadin-list-box.js';
+import '@vaadin/vaadin-item/theme/lumo/vaadin-item.js';
+import './vaadin-grid-pro-edit-text-field.js';
+import '../../src/vaadin-grid-pro-edit-select.js';
+const $_documentContainer = document.createElement('template');
 
-<dom-module id="lumo-grid-pro-edit-select" theme-for="vaadin-grid-pro-edit-select">
+$_documentContainer.innerHTML = `<dom-module id="lumo-grid-pro-edit-select" theme-for="vaadin-grid-pro-edit-select">
   <template>
     <style include="lumo-select">
       :host([theme~="grid-pro-editor"]) [part="toggle-button"] {
@@ -11,9 +13,7 @@
       }
     </style>
   </template>
-</dom-module>
-
-<dom-module id="lumo-grid-pro-edit-select-text-field" theme-for="vaadin-select-text-field">
+</dom-module><dom-module id="lumo-grid-pro-edit-select-text-field" theme-for="vaadin-select-text-field">
   <template>
     <style include="lumo-select-text-field lumo-grid-pro-editor">
       :host([theme~="grid-pro-editor"]) [part="input-field"] ::slotted([part="value"]) {
@@ -28,6 +28,6 @@
       }
     </style>
   </template>
-</dom-module>
+</dom-module>`;
 
-<link rel="import" href="../../src/vaadin-grid-pro-edit-select.html">
+document.head.appendChild($_documentContainer.content);
