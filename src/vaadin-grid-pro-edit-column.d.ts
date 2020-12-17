@@ -1,7 +1,3 @@
-import {FlattenedNodesObserver} from '@polymer/polymer/lib/utils/flattened-nodes-observer.js';
-
-import {get, set} from '@polymer/polymer/lib/utils/path.js';
-
 import {GridColumnElement} from '@vaadin/vaadin-grid/src/vaadin-grid-column.js';
 
 /**
@@ -65,7 +61,6 @@ declare class GridProEditColumnElement extends GridColumnElement {
    * @attr {string} editor-value-path
    */
   editorValuePath: string;
-  ready(): void;
 
   /**
    * Override body template preparation to take editor into account.
@@ -81,10 +76,15 @@ declare class GridProEditColumnElement extends GridColumnElement {
    * Override template search to take editor into account.
    */
   _findTemplate(header: boolean, footer: boolean, editor?: boolean): HTMLTemplateElement|null;
+
   _getEditorTagName(cell: HTMLElement): string;
+
   _getEditorComponent(cell: HTMLElement): HTMLElement|null;
+
   _getEditorValue(editor: HTMLElement): unknown|null;
+
   _startCellEdit(cell: HTMLElement, model: GridItemModel): void;
+
   _stopCellEdit(cell: HTMLElement, model: GridItemModel): void;
 }
 

@@ -1,9 +1,3 @@
-import {microTask} from '@polymer/polymer/lib/utils/async.js';
-
-import {Debouncer} from '@polymer/polymer/lib/utils/debounce.js';
-
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
-
 export {InlineEditingMixin};
 
 declare function InlineEditingMixin<T extends new (...args: any[]) => {}>(base: T): T & InlineEditingMixinConstructor;
@@ -39,10 +33,12 @@ interface InlineEditingMixin {
    * instead of the default double click.
    */
   editOnClick: boolean|null|undefined;
-  ready(): void;
   _checkImports(): void;
+
   _stopEdit(shouldCancel?: boolean, shouldRestoreFocus?: boolean): void;
+
   _switchEditCell(e: KeyboardEvent): void;
+
   _updateItem(row: HTMLElement, item: GridItem|null): void;
 }
 
