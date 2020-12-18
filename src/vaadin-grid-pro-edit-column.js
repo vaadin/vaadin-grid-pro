@@ -29,7 +29,6 @@ import './vaadin-grid-pro-edit-text-field.js';
  * @extends GridColumnElement
  */
 class GridProEditColumnElement extends GridColumnElement {
-
   static get is() {
     return 'vaadin-grid-pro-edit-column';
   }
@@ -107,20 +106,17 @@ class GridProEditColumnElement extends GridColumnElement {
   }
 
   static get observers() {
-    return [
-      '_editModeTemplateOrRendererChanged(_editModeTemplate, editModeRenderer)',
-      '_cellsChanged(_cells.*)'
-    ];
+    return ['_editModeTemplateOrRendererChanged(_editModeTemplate, editModeRenderer)', '_cellsChanged(_cells.*)'];
   }
 
   constructor() {
     super();
 
-    this._editTemplateObserver = new FlattenedNodesObserver(this, info => {
+    this._editTemplateObserver = new FlattenedNodesObserver(this, () => {
       this._editModeTemplate = this._prepareEditModeTemplate();
     });
 
-    this.__editModeRenderer = function(root, column, rowData) {
+    this.__editModeRenderer = function (root, column) {
       const cell = root.assignedSlot.parentNode;
 
       const tagName = column._getEditorTagName(cell);
@@ -148,7 +144,7 @@ class GridProEditColumnElement extends GridColumnElement {
 
   /** @private */
   _cellsChanged() {
-    this._cells.forEach(cell => {
+    this._cells.forEach((cell) => {
       const part = cell.getAttribute('part');
       if (part.indexOf('editable-cell') < 0) {
         cell.setAttribute('part', part + ' editable-cell');
@@ -201,13 +197,13 @@ class GridProEditColumnElement extends GridColumnElement {
    * @protected
    */
   _selectFirstTemplate(header = false, footer = false, editor = false) {
-    return FlattenedNodesObserver.getFlattenedNodes(this)
-      .filter(node =>
-        node.localName === 'template'
-        && node.classList.contains('header') === header
-        && node.classList.contains('footer') === footer
-        && node.classList.contains('editor') === editor
-      )[0];
+    return FlattenedNodesObserver.getFlattenedNodes(this).filter(
+      (node) =>
+        node.localName === 'template' &&
+        node.classList.contains('header') === header &&
+        node.classList.contains('footer') === footer &&
+        node.classList.contains('editor') === editor
+    )[0];
   }
 
   /**
@@ -240,9 +236,7 @@ class GridProEditColumnElement extends GridColumnElement {
    * @protected
    */
   _getEditorTagName(cell) {
-    return this.editorType === 'custom' ?
-      this._getEditorComponent(cell).localName :
-      this._getTagNameByType();
+    return this.editorType === 'custom' ? this._getEditorComponent(cell).localName : this._getTagNameByType();
   }
 
   /**
@@ -251,9 +245,9 @@ class GridProEditColumnElement extends GridColumnElement {
    * @protected
    */
   _getEditorComponent(cell) {
-    return this.editorType === 'custom' ?
-      cell._content.firstElementChild :
-      cell._content.querySelector(this._getEditorTagName(cell));
+    return this.editorType === 'custom'
+      ? cell._content.firstElementChild
+      : cell._content.querySelector(this._getEditorTagName(cell));
   }
 
   /** @private */
@@ -338,7 +332,7 @@ class GridProEditColumnElement extends GridColumnElement {
   _setEditorValue(editor, value) {
     const path = this.editorType === 'checkbox' ? 'checked' : this.editorValuePath;
     // FIXME(yuriy): Required for the flow counterpart as it is passing the string value to webcomponent
-    value = (this.editorType === 'checkbox' && typeof value === 'string') ? value == 'true' : value;
+    value = this.editorType === 'checkbox' && typeof value === 'string' ? value == 'true' : value;
     set(editor, path, value);
     editor.notifyPath && editor.notifyPath(path, value);
   }

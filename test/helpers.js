@@ -1,4 +1,3 @@
-
 import { keyDownOn } from '@polymer/iron-test-helpers/mock-interactions.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { flush } from '@polymer/polymer/lib/utils/flush.js';

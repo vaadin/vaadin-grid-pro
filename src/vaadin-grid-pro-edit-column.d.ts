@@ -1,4 +1,4 @@
-import {GridColumnElement} from '@vaadin/vaadin-grid/src/vaadin-grid-column.js';
+import { GridColumnElement } from '@vaadin/vaadin-grid/src/vaadin-grid-column.js';
 
 /**
  * `<vaadin-grid-pro-edit-column>` is a helper element for the `<vaadin-grid-pro>`
@@ -16,11 +16,10 @@ import {GridColumnElement} from '@vaadin/vaadin-grid/src/vaadin-grid-column.js';
  * ```
  */
 declare class GridProEditColumnElement extends GridColumnElement {
-
   /**
    * JS Path of the property in the item used for the editable content.
    */
-  path: string|null|undefined;
+  path: string | null | undefined;
 
   /**
    * Custom function for rendering the cell content in edit mode.
@@ -36,7 +35,7 @@ declare class GridProEditColumnElement extends GridColumnElement {
    *   - `rowData.level` Level of the tree represented with a horizontal offset of the toggle button.
    *   - `rowData.selected` Selected state.
    */
-  editModeRenderer: GridBodyRenderer|null|undefined;
+  editModeRenderer: GridBodyRenderer | null | undefined;
 
   /**
    * The list of options which should be passed to cell editor component.
@@ -65,23 +64,23 @@ declare class GridProEditColumnElement extends GridColumnElement {
   /**
    * Override body template preparation to take editor into account.
    */
-  _prepareBodyTemplate(): HTMLTemplateElement|null;
+  _prepareBodyTemplate(): HTMLTemplateElement | null;
 
   /**
    * Override template filtering to take editor into account.
    */
-  _selectFirstTemplate(header?: boolean, footer?: boolean, editor?: boolean): HTMLTemplateElement|null;
+  _selectFirstTemplate(header?: boolean, footer?: boolean, editor?: boolean): HTMLTemplateElement | null;
 
   /**
    * Override template search to take editor into account.
    */
-  _findTemplate(header: boolean, footer: boolean, editor?: boolean): HTMLTemplateElement|null;
+  _findTemplate(header: boolean, footer: boolean, editor?: boolean): HTMLTemplateElement | null;
 
   _getEditorTagName(cell: HTMLElement): string;
 
-  _getEditorComponent(cell: HTMLElement): HTMLElement|null;
+  _getEditorComponent(cell: HTMLElement): HTMLElement | null;
 
-  _getEditorValue(editor: HTMLElement): unknown|null;
+  _getEditorValue(editor: HTMLElement): unknown | null;
 
   _startCellEdit(cell: HTMLElement, model: GridItemModel): void;
 
@@ -89,16 +88,15 @@ declare class GridProEditColumnElement extends GridColumnElement {
 }
 
 declare global {
-
   interface HTMLElementTagNameMap {
-    "vaadin-grid-pro-edit-column": GridProEditColumnElement;
+    'vaadin-grid-pro-edit-column': GridProEditColumnElement;
   }
 }
 
-export {GridProEditColumnElement};
+export { GridProEditColumnElement };
 
-import {GridBodyRenderer} from '@vaadin/vaadin-grid/@types/interfaces';
+import { GridBodyRenderer } from '@vaadin/vaadin-grid/@types/interfaces';
 
-import {GridProEditorType} from '../@types/interfaces';
+import { GridProEditorType } from '../@types/interfaces';
 
-import {GridItemModel} from '@vaadin/vaadin-grid/@types/interfaces';
+import { GridItemModel } from '@vaadin/vaadin-grid/@types/interfaces';

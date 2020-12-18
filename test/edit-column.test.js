@@ -351,7 +351,7 @@ describe('edit column', () => {
       tab(input);
 
       selectOverlay = getCellEditor(selectCell)._overlayElement;
-      selectOverlay.addEventListener('vaadin-overlay-open', (e) => {
+      selectOverlay.addEventListener('vaadin-overlay-open', () => {
         tab(selectOverlay);
         input = getCellEditor(checkboxCell);
         expect(input).to.be.ok;
@@ -365,7 +365,7 @@ describe('edit column', () => {
       shiftTab(input);
 
       selectOverlay = getCellEditor(selectCell)._overlayElement;
-      selectOverlay.addEventListener('vaadin-overlay-open', (e) => {
+      selectOverlay.addEventListener('vaadin-overlay-open', () => {
         shiftTab(selectOverlay);
         input = getCellEditor(textCell);
         expect(input).to.be.ok;

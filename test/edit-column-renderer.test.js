@@ -238,7 +238,7 @@ describe('edit column renderer', () => {
     });
 
     it('should close editor and update value when scrolling edited cell out of view', () => {
-      grid.items = Array.apply(null, { length: 30 }).map((_) => Object.assign({}, createItems()[0]));
+      grid.items = Array.apply(null, { length: 30 }).map(() => Object.assign({}, createItems()[0]));
       cell = getContainerCell(grid.$.items, 0, 0);
       column.editModeRenderer = function (root) {
         root.innerHTML = '<input>';
@@ -270,7 +270,7 @@ describe('edit column renderer', () => {
       `);
       column = grid.firstElementChild;
       column.editorValuePath = 'user.name';
-      column.editModeRenderer = function (root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '<user-editor>';
       };
       grid.items = createItems();

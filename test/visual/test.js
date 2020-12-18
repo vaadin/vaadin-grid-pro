@@ -2,7 +2,6 @@ describe('vaadin-grid-pro', () => {
   const locator = '#tests[data-ready]';
 
   ['lumo', 'material'].forEach((theme) => {
-
     it(`${theme}-edit-column-checkbox`, function () {
       return this.browser
         .url(`edit-column-checkbox.html?theme=${theme}`)

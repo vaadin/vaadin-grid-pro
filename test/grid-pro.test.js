@@ -54,7 +54,7 @@ describe('missing imports', () => {
     grid._debouncerCheckImports && grid._debouncerCheckImports.flush();
   };
 
-  const describeMissingImportWarning = (elementName, assertPath) => {
+  const describeMissingImportWarning = (elementName) => {
     describe(`import warning for ${elementName}`, () => {
       beforeEach(() => {
         sinon.stub(console, 'warn');

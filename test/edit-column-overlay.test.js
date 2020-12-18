@@ -59,7 +59,7 @@ const fixtures = {
       dateCell = getContainerCell(grid.$.items, 0, 1);
 
       if (type === 'default') {
-        grid.querySelector('[path="date"]').editModeRenderer = function (root, column, rowData) {
+        grid.querySelector('[path="date"]').editModeRenderer = function (root) {
           root.innerHTML = '';
           const inputWrapper = document.createElement('div');
           const datePicker = document.createElement('vaadin-date-picker');

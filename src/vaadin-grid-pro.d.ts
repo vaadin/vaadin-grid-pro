@@ -1,6 +1,6 @@
-import {GridElement} from '@vaadin/vaadin-grid/src/vaadin-grid.js';
+import { GridElement } from '@vaadin/vaadin-grid/src/vaadin-grid.js';
 
-import {InlineEditingMixin} from './vaadin-grid-pro-inline-editing-mixin.js';
+import { InlineEditingMixin } from './vaadin-grid-pro-inline-editing-mixin.js';
 
 /**
  * `<vaadin-grid-pro>` is a high quality data grid / data table Web Component with extended functionality.
@@ -13,17 +13,14 @@ import {InlineEditingMixin} from './vaadin-grid-pro-inline-editing-mixin.js';
  * <vaadin-grid-pro></vaadin-grid-pro>
  * ```
  */
-declare class GridProElement extends
-  InlineEditingMixin(
-  GridElement) {
+declare class GridProElement extends InlineEditingMixin(GridElement) {
   static _finalizeClass(): void;
 }
 
 declare global {
-
   interface HTMLElementTagNameMap {
-    "vaadin-grid-pro": GridProElement;
+    'vaadin-grid-pro': GridProElement;
   }
 }
 
-export {GridProElement};
+export { GridProElement };

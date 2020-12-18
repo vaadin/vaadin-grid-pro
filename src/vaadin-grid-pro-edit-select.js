@@ -43,9 +43,7 @@ class GridProEditSelectElement extends SelectElement {
   }
 
   static get observers() {
-    return [
-      '_optionsChanged(options)'
-    ];
+    return ['_optionsChanged(options)'];
   }
 
   ready() {
@@ -96,20 +94,20 @@ class GridProEditSelectElement extends SelectElement {
 
   _optionsChanged(options) {
     if (options && options.length) {
-      this.renderer = root => {
+      this.renderer = (root) => {
         if (root.firstChild) {
           return;
         }
         const listBox = document.createElement('vaadin-list-box');
         listBox.selected = options.indexOf(this.value);
-        options.forEach(option => {
+        options.forEach((option) => {
           const item = document.createElement('vaadin-item');
           item.textContent = option;
           listBox.appendChild(item);
         });
 
         // save the "keydown" event for Enter
-        listBox.addEventListener('keydown', e => {
+        listBox.addEventListener('keydown', (e) => {
           if (e.keyCode === 13) {
             this._enterKeydown = e;
           }
@@ -118,7 +116,7 @@ class GridProEditSelectElement extends SelectElement {
         root.appendChild(listBox);
       };
 
-      this._overlayElement.addEventListener('vaadin-overlay-outside-click', e => {
+      this._overlayElement.addEventListener('vaadin-overlay-outside-click', () => {
         this._grid._stopEdit();
       });
 
