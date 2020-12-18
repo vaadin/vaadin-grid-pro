@@ -1,14 +1,9 @@
 import { GridItem } from '@vaadin/vaadin-grid';
 
-export { InlineEditingMixin };
-
 declare function InlineEditingMixin<T extends new (...args: any[]) => {}>(base: T): T & InlineEditingMixinConstructor;
-
 interface InlineEditingMixinConstructor {
   new (...args: any[]): InlineEditingMixin;
 }
-
-export { InlineEditingMixinConstructor };
 
 interface InlineEditingMixin {
   /**
@@ -34,6 +29,7 @@ interface InlineEditingMixin {
    * instead of the default double click.
    */
   editOnClick: boolean | null | undefined;
+
   _checkImports(): void;
 
   _stopEdit(shouldCancel?: boolean, shouldRestoreFocus?: boolean): void;
@@ -42,3 +38,5 @@ interface InlineEditingMixin {
 
   _updateItem(row: HTMLElement, item: GridItem | null): void;
 }
+
+export { InlineEditingMixin, InlineEditingMixinConstructor };

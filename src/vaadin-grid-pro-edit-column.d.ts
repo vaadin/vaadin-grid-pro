@@ -2,7 +2,7 @@ import { GridColumnElement } from '@vaadin/vaadin-grid/src/vaadin-grid-column.js
 
 import { GridBodyRenderer, GridItemModel } from '@vaadin/vaadin-grid';
 
-import { GridProEditorType } from '../@types/interfaces';
+import { GridProEditorType } from './interfaces';
 
 /**
  * `<vaadin-grid-pro-edit-column>` is a helper element for the `<vaadin-grid-pro>`
