@@ -15,8 +15,6 @@ import { CheckboxElement } from '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js'
  * for `<vaadin-checkbox>` parts.
  *
  * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
- *
- * @extends PolymerElement
  */
 class GridProEditCheckboxElement extends CheckboxElement {
   static get is() {

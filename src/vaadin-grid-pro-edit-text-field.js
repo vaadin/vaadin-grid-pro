@@ -15,8 +15,6 @@ import { TextFieldElement } from '@vaadin/vaadin-text-field/src/vaadin-text-fiel
  * for `<vaadin-text-field>` parts.
  *
  * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
- *
- * @extends PolymerElement
  */
 class GridProEditTextFieldElement extends TextFieldElement {
   static get is() {

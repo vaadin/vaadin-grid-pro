@@ -17,8 +17,6 @@ import '@vaadin/vaadin-item/src/vaadin-item.js';
  * for `<vaadin-grid-pro-edit-select>` parts.
  *
  * See [ThemableMixin – how to apply styles for shadow parts](https://github.com/vaadin/vaadin-themable-mixin/wiki)
- *
- * @extends PolymerElement
  */
 class GridProEditSelectElement extends SelectElement {
   static get is() {
