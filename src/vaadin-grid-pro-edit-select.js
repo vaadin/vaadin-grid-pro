@@ -116,9 +116,6 @@ class GridProEditSelectElement extends SelectElement {
         });
 
         root.appendChild(listBox);
-
-        // ensure items are picked up by list-box
-        window.ShadyDOM && window.ShadyDOM.flush();
       };
 
       this._overlayElement.addEventListener('vaadin-overlay-outside-click', e => {
