@@ -1,119 +1,53 @@
-<!doctype html>
-
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>edit-column test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script src="../../../wct-browser-legacy/browser.js"></script>
-  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
-
-  <script type="module" src="./helpers.js"></script>
-  <script type="module" src="./not-animated-styles.js"></script>
-  <script type="module" src="../vaadin-grid-pro.js"></script>
-  <script type="module" src="../vaadin-grid-pro-edit-column.js"></script>
-</head>
-
-<body>>
-
-  <test-fixture id="editor-type">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="married"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="title"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-column>
-          <template>[[item.married]]</template>
-        </vaadin-grid-column>
-      </vaadin-grid>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="template-editor-type">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="name" editor-type="text">
-          <template>[[item.name]]</template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="title" editor-type="select">
-          <template>[[item.title]]</template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="married" editor-type="checkbox">
-          <template>[[item.married]]</template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-column>
-          <template>[[item.age]]</template>
-        </vaadin-grid-column>
-      </vaadin-grid>
-    </template>
-  </test-fixture>
-
-  <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import './helpers.js';
-import './not-animated-styles.js';
-import '../vaadin-grid-pro.js';
-import '../vaadin-grid-pro-edit-column.js';
+import { expect } from '@esm-bundle/chai';
+import sinon from 'sinon';
+import { fixtureSync } from '@open-wc/testing-helpers';
 import { TextFieldElement } from '@vaadin/vaadin-text-field/src/vaadin-text-field.js';
 import { SelectElement } from '@vaadin/vaadin-select/src/vaadin-select.js';
 import { CheckboxElement } from '@vaadin/vaadin-checkbox/src/vaadin-checkbox.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-function getItems() {
-  return [
-    {name: 'foo', age: 20, married: true, title: 'mrs'},
-    {name: 'bar', age: 30, married: false, title: 'ms'},
-    {name: 'baz', age: 40, married: false, title: 'mr'}
-  ];
-}
-
-function dblclick(target) {
-  if (isIOS) {
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-  } else {
-    target.dispatchEvent(new CustomEvent('dblclick', {bubbles: true, composed: true}));
-  }
-}
-
-function up(target) {
-  MockInteractions.keyDownOn(target, 38, [], 'ArrowUp');
-}
-
-function down(target) {
-  MockInteractions.keyDownOn(target, 40, [], 'ArrowDown');
-}
-
-function space(target) {
-  MockInteractions.keyDownOn(target, 32, [], ' ');
-}
-
-function enter(target) {
-  MockInteractions.keyDownOn(target, 13, [], 'Enter');
-}
-
-function keyDownChar(target, letter, modifier) {
-  MockInteractions.keyDownOn(target, letter.charCodeAt(0), modifier, letter);
-}
+import {
+  arrowDown,
+  arrowUp,
+  createItems,
+  dblclick,
+  enter,
+  flushGrid,
+  getCellEditor,
+  getContainerCell,
+  keyDownChar,
+  nextRender,
+  onceOpened,
+  space
+} from './helpers.js';
+import './not-animated-styles.js';
+import '../vaadin-grid-pro.js';
+import '../vaadin-grid-pro-edit-column.js';
 
 describe('edit column editor type', () => {
-
-  describe('specified editor type with representation template', () => {
+  describe('with representation template', () => {
     let grid, cell, column, editor;
 
     beforeEach(() => {
-      grid = fixture('template-editor-type');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name" editor-type="text">
+            <template>[[item.name]]</template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="title" editor-type="select">
+            <template>[[item.title]]</template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="married" editor-type="checkbox">
+            <template>[[item.married]]</template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-column>
+            <template>[[item.age]]</template>
+          </vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
-    it('should render the textfield to cell with text editor type specified', () => {
+    it('should render the text field to cell with text editor type specified', () => {
       column = grid.querySelectorAll('vaadin-grid-pro-edit-column')[0];
       cell = getContainerCell(grid.$.items, 0, 0);
       dblclick(cell._content);
@@ -142,8 +76,18 @@ describe('edit column editor type', () => {
     let grid, cell, column, editor;
 
     beforeEach(() => {
-      grid = fixture('editor-type');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="married"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="title"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column>
+            <template>[[item.married]]</template>
+          </vaadin-grid-column>
+        </vaadin-gri-pro>
+      `);
+      grid.items = createItems();
       column = grid.firstElementChild;
       column.editorType = 'checkbox';
       flushGrid(grid);
@@ -176,28 +120,20 @@ describe('edit column editor type', () => {
   describe('select', () => {
     let grid, cell, column, editor;
 
-    const nextRender = (elem) => {
-      return new Promise(resolve => {
-        afterNextRender(elem, resolve);
-      });
-    };
-
-    const onceOpened = elem => {
-      return new Promise(resolve => {
-        const listener = e => {
-          if (e.detail.value) {
-            elem.removeEventListener('opened-changed', listener);
-            resolve();
-          }
-        };
-        elem.addEventListener('opened-changed', listener);
-      });
-    };
-
     describe('with options', () => {
-      beforeEach(done => {
-        grid = fixture('editor-type');
-        grid.items = getItems();
+      beforeEach(async () => {
+        grid = fixtureSync(`
+          <vaadin-grid-pro>
+            <vaadin-grid-pro-edit-column path="married"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-pro-edit-column path="title"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-column>
+              <template>[[item.married]]</template>
+            </vaadin-grid-column>
+          </vaadin-gri-pro>
+        `);
+        grid.items = createItems();
         column = grid.querySelector('[path="title"]');
         column.editorType = 'select';
         column.editorOptions = ['mr', 'mrs', 'ms'];
@@ -205,7 +141,7 @@ describe('edit column editor type', () => {
         cell = getContainerCell(grid.$.items, 0, 1);
         enter(cell._content);
         editor = getCellEditor(cell);
-        onceOpened(editor).then(() => done());
+        await onceOpened(editor);
       });
 
       it('should render the opened select to cell in edit mode', () => {
@@ -214,12 +150,12 @@ describe('edit column editor type', () => {
         expect(editor.opened).to.equal(true);
       });
 
-      it('should open the select and stop focusout on editor click', async() => {
+      it('should open the select and stop focusout on editor click', async () => {
         editor.opened = false;
         editor.focusElement.click();
-        const focusout = new CustomEvent('focusout', {bubbles: true, composed: true});
+        const focusout = new CustomEvent('focusout', { bubbles: true, composed: true });
         editor.dispatchEvent(focusout);
-        const focusin = new CustomEvent('focusin', {bubbles: true, composed: true});
+        const focusin = new CustomEvent('focusin', { bubbles: true, composed: true });
         editor._overlayElement.querySelector('vaadin-item').dispatchEvent(focusin);
         grid._flushStopEdit();
         await nextRender(editor._menuElement);
@@ -231,23 +167,23 @@ describe('edit column editor type', () => {
         expect(editor.opened).to.equal(false);
       });
 
-      it('should open the select on space key', async() => {
+      it('should open the select on space key', async () => {
         editor.opened = false;
         space(editor.focusElement);
         await nextRender(editor._menuElement);
         expect(editor.opened).to.equal(true);
       });
 
-      it('should open the select on arrow down key', async() => {
+      it('should open the select on arrow down key', async () => {
         editor.opened = false;
-        down(editor.focusElement);
+        arrowDown(editor.focusElement);
         await nextRender(editor._menuElement);
         expect(editor.opened).to.equal(true);
       });
 
-      it('should open the select on arrow up key', async() => {
+      it('should open the select on arrow up key', async () => {
         editor.opened = false;
-        up(editor.focusElement);
+        arrowUp(editor.focusElement);
         await nextRender(editor._menuElement);
         expect(editor.opened).to.equal(true);
       });
@@ -260,10 +196,10 @@ describe('edit column editor type', () => {
         item.click();
         expect(column._getEditorComponent(cell)).to.not.be.ok;
         expect(cell._content.textContent).to.equal(value);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
-      it('should work with `enterNextRow`', async() => {
+      it('should work with `enterNextRow`', async () => {
         grid.enterNextRow = true;
         const item = editor._overlayElement.querySelector('vaadin-item');
         enter(item);
@@ -275,9 +211,19 @@ describe('edit column editor type', () => {
     });
 
     describe('without options', () => {
-      beforeEach(done => {
-        grid = fixture('editor-type');
-        grid.items = getItems();
+      beforeEach(async () => {
+        grid = fixtureSync(`
+          <vaadin-grid-pro>
+            <vaadin-grid-pro-edit-column path="married"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-pro-edit-column path="title"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+            <vaadin-grid-column>
+              <template>[[item.married]]</template>
+            </vaadin-grid-column>
+          </vaadin-gri-pro>
+        `);
+        grid.items = createItems();
         column = grid.querySelector('[path="title"]');
         column.editorType = 'select';
         column.editorOptions = [];
@@ -285,7 +231,13 @@ describe('edit column editor type', () => {
         cell = getContainerCell(grid.$.items, 0, 1);
         enter(cell._content);
         editor = getCellEditor(cell);
-        afterNextRender(editor, () => done());
+        await nextRender(editor);
+
+        sinon.stub(console, 'warn');
+      });
+
+      afterEach(() => {
+        console.warn.restore();
       });
 
       it('should render the closed select to cell in edit mode', () => {
@@ -295,38 +247,30 @@ describe('edit column editor type', () => {
       });
 
       it('should not throw when moving focus out of the select', () => {
-        const evt = new CustomEvent('focusout', {bubbles: true, composed: true});
+        const evt = new CustomEvent('focusout', { bubbles: true, composed: true });
         editor.dispatchEvent(evt);
         grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
         expect(column._getEditorComponent(cell)).to.not.be.ok;
       });
 
-      it('should warn about missing options on enter key', async() => {
-        sinon.stub(console, 'warn');
+      it('should warn about missing options on enter key', async () => {
         enter(editor.focusElement);
         expect(console.warn.called).to.be.true;
-        console.warn.restore();
       });
 
-      it('should warn about missing options on space key', async() => {
-        sinon.stub(console, 'warn');
+      it('should warn about missing options on space key', async () => {
         space(editor.focusElement);
         expect(console.warn.called).to.be.true;
-        console.warn.restore();
       });
 
-      it('should warn about missing options on arrow down key', async() => {
-        sinon.stub(console, 'warn');
-        down(editor.focusElement);
+      it('should warn about missing options on arrow down key', async () => {
+        arrowDown(editor.focusElement);
         expect(console.warn.called).to.be.true;
-        console.warn.restore();
       });
 
-      it('should warn about missing options on arrow up key', async() => {
-        sinon.stub(console, 'warn');
-        up(editor.focusElement);
+      it('should warn about missing options on arrow up key', async () => {
+        arrowUp(editor.focusElement);
         expect(console.warn.called).to.be.true;
-        console.warn.restore();
       });
     });
   });
@@ -335,8 +279,18 @@ describe('edit column editor type', () => {
     let grid, cell, columns, column, editor;
 
     beforeEach(() => {
-      grid = fixture('editor-type');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="married"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="title"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column>
+            <template>[[item.married]]</template>
+          </vaadin-grid-column>
+        </vaadin-gri-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
       columns = grid._columnTree[0];
     });
@@ -379,7 +333,7 @@ describe('edit column editor type', () => {
     it('should not start edit on typing when editor type set to custom', () => {
       column = grid.querySelector('[path="married"]');
       cell = getContainerCell(grid.$.items, 0, columns.indexOf(column));
-      column.editModeRenderer = root => {
+      column.editModeRenderer = (root) => {
         root.innerHTML = '<input type="checkbox">';
       };
       keyDownChar(cell._content, 'a');
@@ -388,8 +342,3 @@ describe('edit column editor type', () => {
     });
   });
 });
-</script>
-
-</body>
-
-</html>

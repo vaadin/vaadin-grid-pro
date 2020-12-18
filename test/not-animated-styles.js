@@ -1,16 +1,13 @@
-const $_documentContainer = document.createElement('template');
+import { registerStyles, css } from '@vaadin/vaadin-themable-mixin/register-styles.js';
 
-$_documentContainer.innerHTML = `<dom-module id="not-animated-select-overlay" theme-for="vaadin-select-overlay">
-  <template>
-    <style include="lumo-select-overlay">
-      :host([opening]),
-      :host([closing]),
-      :host([opening]) [part="overlay"],
-      :host([closing]) [part="overlay"] {
-        animation: none !important;
-      }
-    </style>
-  </template>
-</dom-module>`;
-
-document.head.appendChild($_documentContainer.content);
+registerStyles(
+  'vaadin-select-overlay',
+  css`
+    :host([opening]),
+    :host([closing]),
+    :host([opening]) [part='overlay'],
+    :host([closing]) [part='overlay'] {
+      animation: none !important;
+    }
+  `
+);

@@ -1,120 +1,45 @@
-<!doctype html>
-
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>edit-column test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script src="../../../wct-browser-legacy/browser.js"></script>
-  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
-
-  <script type="module" src="./helpers.js"></script>
-  <script type="module" src="./not-animated-styles.js"></script>
-  <script type="module" src="../vaadin-grid-pro.js"></script>
-  <script type="module" src="../vaadin-grid-pro-edit-column.js"></script>
-</head>
-
-<body>
-  <test-fixture id="default">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="name">
-          <template class="header">Name</template>
-          <template>[[index]] [[item.name]]</template>
-          <template class="footer"></template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-column path="name"></vaadin-grid-column>
-      </vaadin-grid-pro>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="select">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="title" editor-type="select"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-column path="name"></vaadin-grid-column>
-      </vaadin-grid-pro>
-    </template>
-  </test-fixture>
-
-  <test-fixture id="custom">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="custom">
-          <template class="editor">
-            <div>
-              <input type="text">
-              <input type="text">
-            </div>
-          </template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-column path="name"></vaadin-grid-column>
-      </vaadin-grid-pro>
-    </template>
-  </test-fixture>
-
-  <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import './helpers.js';
-import './not-animated-styles.js';
+import { expect } from '@esm-bundle/chai';
+import sinon from 'sinon';
+import { fixtureSync } from '@open-wc/testing-helpers';
+import {
+  createItems,
+  dblclick,
+  dragAndDropOver,
+  enter,
+  esc,
+  flatMap,
+  flushGrid,
+  getCellEditor,
+  getContainerCell,
+  getNativeInput,
+  getRowCells,
+  getRows,
+  infiniteDataProvider,
+  isIOS,
+  shiftEnter,
+  shiftTab,
+  tab
+} from './helpers.js';
 import '../vaadin-grid-pro.js';
 import '../vaadin-grid-pro-edit-column.js';
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-function getItems() {
-  return [
-    {name: 'foo', age: 20, married: true, title: 'mrs'},
-    {name: 'bar', age: 30, married: false, title: 'ms'},
-    {name: 'baz', age: 40, married: false, title: 'mr'}
-  ];
-}
-
-function dblclick(target) {
-  if (isIOS) {
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-  } else {
-    target.dispatchEvent(new CustomEvent('dblclick', {bubbles: true, composed: true}));
-  }
-}
-
-function tab(target) {
-  MockInteractions.keyDownOn(target, 9, [], 'Tab');
-}
-
-function shiftTab(target) {
-  MockInteractions.keyDownOn(target, 9, 'shift', 'Tab');
-}
-
-function enter(target) {
-  MockInteractions.keyDownOn(target, 13, [], 'Enter');
-}
-
-function shiftEnter(target) {
-  MockInteractions.keyDownOn(target, 13, 'shift', 'Enter');
-}
-
-function esc(target) {
-  MockInteractions.keyDownOn(target, 27, [], 'Escape');
-}
 
 describe('edit column', () => {
-
-  !isIOS && describe('keyboard navigation', () => {
+  (isIOS ? describe.skip : describe)('keyboard navigation', () => {
     let grid, input;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
@@ -131,7 +56,7 @@ describe('edit column', () => {
         const secondCell = getContainerCell(grid.$.items, 1, 1);
         const spy = sinon.spy(secondCell, 'focus');
         tab(input);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
       it('should focus previous cell available for editing within a same row in non-edit mode on Shift Tab', () => {
@@ -142,7 +67,7 @@ describe('edit column', () => {
         const secondCell = getContainerCell(grid.$.items, 1, 0);
         const spy = sinon.spy(secondCell, 'focus');
         shiftTab(input);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
       it('should focus cell next available for editing on the next row in non-edit mode on Tab', () => {
@@ -153,7 +78,7 @@ describe('edit column', () => {
         const secondCell = getContainerCell(grid.$.items, 2, 0);
         const spy = sinon.spy(secondCell, 'focus');
         tab(input);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
       it('should focus previous cell available for editing on the previous in non-edit mode on Shift Tab', () => {
@@ -164,7 +89,7 @@ describe('edit column', () => {
         const secondCell = getContainerCell(grid.$.items, 1, 1);
         const spy = sinon.spy(secondCell, 'focus');
         shiftTab(input);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
       it('should focus editable cell on the next row in non-edit mode on Enter, if `enterNextRow` is true', () => {
@@ -176,7 +101,7 @@ describe('edit column', () => {
         const secondCell = getContainerCell(grid.$.items, 2, 0);
         const spy = sinon.spy(secondCell, 'focus');
         enter(input);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
       it('should exit the edit mode for the cell on Enter, if `enterNextRow` is false', () => {
@@ -197,7 +122,7 @@ describe('edit column', () => {
         const secondCell = getContainerCell(grid.$.items, 0, 0);
         const spy = sinon.spy(secondCell, 'focus');
         shiftEnter(input);
-        expect(spy).to.be.calledOnce;
+        expect(spy.calledOnce).to.be.true;
       });
 
       it('should exit the edit mode for the cell on Shift Enter, if `enterNextRow` is false', () => {
@@ -227,7 +152,7 @@ describe('edit column', () => {
         dblclick(firstCell._content);
         input = getCellEditor(firstCell);
 
-        input.addEventListener('keydown', e => e.keyCode === 9 && e.preventDefault());
+        input.addEventListener('keydown', (e) => e.keyCode === 9 && e.preventDefault());
         tab(input);
         expect(getCellEditor(firstCell)).to.be.ok;
       });
@@ -242,14 +167,14 @@ describe('edit column', () => {
         expect(getCellEditor(firstCell)).to.be.ok;
       });
 
-      it('should be possible to switch edit cell on Tab with delay after `internal-tab` was fired', done => {
+      it('should be possible to switch edit cell on Tab with delay after `internal-tab` was fired', (done) => {
         const firstCell = getContainerCell(grid.$.items, 1, 0);
         dblclick(firstCell._content);
         input = getCellEditor(firstCell);
 
         input.dispatchEvent(new CustomEvent('internal-tab'));
         const secondCell = getContainerCell(grid.$.items, 1, 1);
-        window.requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
           tab(input);
           expect(getCellEditor(secondCell)).to.be.ok;
           done();
@@ -330,7 +255,7 @@ describe('edit column', () => {
 
         const spy = sinon.spy(firstCell, 'focus');
         enter(input);
-        expect(spy).to.not.be.called;
+        expect(spy.called).to.be.false;
       });
 
       it('should exit the edit mode for the cell on Shift Enter, if `enterNextRow` is false', () => {
@@ -340,48 +265,6 @@ describe('edit column', () => {
 
         shiftEnter(input);
         expect(getCellEditor(firstCell)).to.be.not.ok;
-      });
-
-      describe('with the select column', () => {
-        let textCell, selectCell, selectOverlay, checkboxCell;
-
-        beforeEach(() => {
-          grid = fixture('select');
-          grid.items = getItems();
-          grid.querySelector('[path="title"]').editorOptions = ['mr', 'mrs', 'ms'];
-          flushGrid(grid);
-          textCell = getContainerCell(grid.$.items, 1, 0);
-          selectCell = getContainerCell(grid.$.items, 1, 1);
-          checkboxCell = getContainerCell(grid.$.items, 1, 2);
-        });
-
-        it('should focus cell next available for editing in edit mode on Tab', done => {
-          dblclick(textCell._content);
-          input = getCellEditor(textCell);
-          tab(input);
-
-          selectOverlay = getCellEditor(selectCell)._overlayElement;
-          selectOverlay.addEventListener('vaadin-overlay-open', e => {
-            tab(selectOverlay);
-            input = getCellEditor(checkboxCell);
-            expect(input).to.be.ok;
-            done();
-          });
-        });
-
-        it('should focus previous cell available for editing in edit mode on Shift Tab', done => {
-          dblclick(checkboxCell._content);
-          input = getCellEditor(checkboxCell);
-          shiftTab(input);
-
-          selectOverlay = getCellEditor(selectCell)._overlayElement;
-          selectOverlay.addEventListener('vaadin-overlay-open', e => {
-            shiftTab(selectOverlay);
-            input = getCellEditor(textCell);
-            expect(input).to.be.ok;
-            done();
-          });
-        });
       });
     });
 
@@ -423,7 +306,7 @@ describe('edit column', () => {
       const secondCell = getContainerCell(grid.$.items, 1, 0);
       const spy = sinon.spy(secondCell, 'focus');
       tab(input);
-      expect(spy).to.be.calledOnce;
+      expect(spy.calledOnce).to.be.true;
     });
 
     it('should focus correct editable cell when column is hidden', () => {
@@ -438,7 +321,56 @@ describe('edit column', () => {
       const secondCell = getContainerCell(grid.$.items, 2, 1);
       const spy = sinon.spy(secondCell, 'focus');
       tab(input);
-      expect(spy).to.be.calledOnce;
+      expect(spy.calledOnce).to.be.true;
+    });
+  });
+
+  (isIOS ? describe.skip : describe)('select column', () => {
+    let grid, input, textCell, selectCell, selectOverlay, checkboxCell;
+
+    beforeEach(() => {
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="title" editor-type="select"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
+      grid.querySelector('[path="title"]').editorOptions = ['mr', 'mrs', 'ms'];
+      flushGrid(grid);
+      textCell = getContainerCell(grid.$.items, 1, 0);
+      selectCell = getContainerCell(grid.$.items, 1, 1);
+      checkboxCell = getContainerCell(grid.$.items, 1, 2);
+    });
+
+    it('should focus cell next available for editing in edit mode on Tab', (done) => {
+      dblclick(textCell._content);
+      input = getCellEditor(textCell);
+      tab(input);
+
+      selectOverlay = getCellEditor(selectCell)._overlayElement;
+      selectOverlay.addEventListener('vaadin-overlay-open', (e) => {
+        tab(selectOverlay);
+        input = getCellEditor(checkboxCell);
+        expect(input).to.be.ok;
+        done();
+      });
+    });
+
+    it('should focus previous cell available for editing in edit mode on Shift Tab', (done) => {
+      dblclick(checkboxCell._content);
+      input = getCellEditor(checkboxCell);
+      shiftTab(input);
+
+      selectOverlay = getCellEditor(selectCell)._overlayElement;
+      selectOverlay.addEventListener('vaadin-overlay-open', (e) => {
+        shiftTab(selectOverlay);
+        input = getCellEditor(textCell);
+        expect(input).to.be.ok;
+        done();
+      });
     });
   });
 
@@ -446,8 +378,22 @@ describe('edit column', () => {
     let grid, inputWrapper;
 
     beforeEach(() => {
-      grid = fixture('custom');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="custom">
+            <template class="editor">
+              <div>
+                <input type="text">
+                <input type="text">
+              </div>
+            </template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
@@ -459,8 +405,8 @@ describe('edit column', () => {
 
       expect(inputWrapper).to.be.ok;
 
-      inputs[0].dispatchEvent(new CustomEvent('focusout', {bubbles: true, composed: true}));
-      inputs[1].dispatchEvent(new CustomEvent('focusin', {bubbles: true, composed: true}));
+      inputs[0].dispatchEvent(new CustomEvent('focusout', { bubbles: true, composed: true }));
+      inputs[1].dispatchEvent(new CustomEvent('focusin', { bubbles: true, composed: true }));
       grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
 
       expect(getCellEditor(customCell)).to.be.ok;
@@ -471,8 +417,18 @@ describe('edit column', () => {
     let grid, input;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       grid.style.width = '100px'; // column default min width is 100px
       flushGrid(grid);
     });
@@ -501,21 +457,30 @@ describe('edit column', () => {
   });
 
   describe('item-property-changed event', () => {
-
     let grid, column, firstCell, input;
 
     beforeEach(() => {
-      grid = fixture('default');
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
       column = grid.firstElementChild;
-      grid.items = getItems();
+      grid.items = createItems();
 
       flushGrid(grid);
       firstCell = getContainerCell(grid.$.items, 0, 0);
     });
 
-    it('should be fired once cell edit completed and value has changed', done => {
-      grid.addEventListener('item-property-changed', e => {
-        const {value, path} = e.detail;
+    it('should be fired once cell edit completed and value has changed', (done) => {
+      grid.addEventListener('item-property-changed', (e) => {
+        const { value, path } = e.detail;
         expect(value).to.equal('new');
         expect(path).to.equal(column.path);
         done();
@@ -535,13 +500,13 @@ describe('edit column', () => {
       input.value = 'new';
       input.value = value;
       enter(input);
-      expect(spy).to.not.be.called;
+      expect(spy.called).to.be.false;
     });
 
-    it('should be not modify the cell content if prevented by user', done => {
-      grid.addEventListener('item-property-changed', e => {
+    it('should be not modify the cell content if prevented by user', (done) => {
+      grid.addEventListener('item-property-changed', (e) => {
         e.preventDefault();
-        flush(() => {
+        requestAnimationFrame(() => {
           expect(firstCell._content.textContent).to.equal('0 foo');
           done();
         });
@@ -554,12 +519,21 @@ describe('edit column', () => {
   });
 
   describe('disable editing', () => {
-
     let grid;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
@@ -576,7 +550,17 @@ describe('edit column', () => {
     let grid, input, firstCell;
 
     beforeEach(() => {
-      grid = fixture('default');
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
       grid.size = 1000;
       grid.dataProvider = infiniteDataProvider;
       flushGrid(grid);
@@ -605,8 +589,18 @@ describe('edit column', () => {
     let grid, cell;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
@@ -614,28 +608,28 @@ describe('edit column', () => {
       cell = getContainerCell(grid.$.items, 0, 0);
 
       // mimic the real events sequence to avoid using fake focus shim from grid
-      cell.dispatchEvent(new CustomEvent('mousedown', {bubbles: true, composed: true}));
+      cell.dispatchEvent(new CustomEvent('mousedown', { bubbles: true, composed: true }));
       expect(grid.hasAttribute('navigating')).to.be.true;
 
       cell.focus();
-      cell.dispatchEvent(new CustomEvent('focusout', {bubbles: true, composed: true}));
+      cell.dispatchEvent(new CustomEvent('focusout', { bubbles: true, composed: true }));
       expect(grid.hasAttribute('navigating')).to.be.true;
 
-      cell.dispatchEvent(new CustomEvent('focusin', {bubbles: true, composed: true}));
+      cell.dispatchEvent(new CustomEvent('focusin', { bubbles: true, composed: true }));
       expect(grid.hasAttribute('navigating')).to.be.true;
     });
 
     it('should not set navigating state on the grid while focusing the non-editable cell', () => {
       cell = getContainerCell(grid.$.items, 0, 2);
 
-      cell.dispatchEvent(new CustomEvent('mousedown', {bubbles: true, composed: true}));
+      cell.dispatchEvent(new CustomEvent('mousedown', { bubbles: true, composed: true }));
       expect(grid.hasAttribute('navigating')).to.be.false;
 
       cell.focus();
-      cell.dispatchEvent(new CustomEvent('focusout', {bubbles: true, composed: true}));
+      cell.dispatchEvent(new CustomEvent('focusout', { bubbles: true, composed: true }));
       expect(grid.hasAttribute('navigating')).to.be.false;
 
-      cell.dispatchEvent(new CustomEvent('focusin', {bubbles: true, composed: true}));
+      cell.dispatchEvent(new CustomEvent('focusin', { bubbles: true, composed: true }));
       expect(grid.hasAttribute('navigating')).to.be.false;
     });
   });
@@ -644,19 +638,29 @@ describe('edit column', () => {
     let grid, cell;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
     it('should throw an error when no path is set for the edit column', () => {
       const column = grid.querySelector('vaadin-grid-pro-edit-column');
-      expect(() => column.path = undefined).to.throw(Error);
+      expect(() => (column.path = undefined)).to.throw(Error);
     });
 
     it('should throw an error when path is set to empty string for the edit column', () => {
       const column = grid.querySelector('vaadin-grid-pro-edit-column');
-      expect(() => column.path = '').to.throw(Error);
+      expect(() => (column.path = '')).to.throw(Error);
     });
 
     it('should not fire active-item-changed on grid edit column', () => {
@@ -680,40 +684,55 @@ describe('edit column', () => {
   });
 
   describe('part attribute', () => {
-
     let grid, rows;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
       rows = Array.from(getRows(grid.$.items));
     });
 
     it('should have editable-cell attribute on edit column cells', () => {
-      const editColumnCells = flatMap(rows, row => getRowCells(row).slice(0, 2));
+      const editColumnCells = flatMap(rows, (row) => getRowCells(row).slice(0, 2));
       expect(editColumnCells).to.have.lengthOf(6);
-      editColumnCells.forEach(cell =>
-        expect(cell.getAttribute('part')).to.equal('cell body-cell editable-cell'));
+      editColumnCells.forEach((cell) => expect(cell.getAttribute('part')).to.equal('cell body-cell editable-cell'));
     });
 
     it('should not have editable-cell attribute on normal column cells', () => {
-      const normalColumnCells = rows.map(row => getRowCells(row)[2]);
+      const normalColumnCells = rows.map((row) => getRowCells(row)[2]);
       expect(normalColumnCells).to.have.lengthOf(3);
-      normalColumnCells.forEach(cell =>
-        expect(cell.getAttribute('part')).to.equal('cell body-cell'));
+      normalColumnCells.forEach((cell) => expect(cell.getAttribute('part')).to.equal('cell body-cell'));
     });
-
   });
 
   describe('row details', () => {
-
     let grid, rows;
 
     beforeEach(() => {
-      grid = fixture('default');
-      grid.items = getItems();
-      grid.rowDetailsRenderer = root => root.textContent = 'foo';
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column path="name"></vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
+      grid.rowDetailsRenderer = (root) => (root.textContent = 'foo');
       flushGrid(grid);
       rows = Array.from(getRows(grid.$.items));
     });
@@ -722,14 +741,8 @@ describe('edit column', () => {
       grid.detailsOpenedItems = [grid.items[0]];
       const detailsCell = rows[0].querySelector('[part~="details-cell"]');
 
-      const dispatch = () => detailsCell.dispatchEvent(new CustomEvent('mousedown', {bubbles: true, composed: true}));
+      const dispatch = () => detailsCell.dispatchEvent(new CustomEvent('mousedown', { bubbles: true, composed: true }));
       expect(dispatch).to.not.throw(Error);
     });
-
   });
 });
-</script>
-
-</body>
-
-</html>

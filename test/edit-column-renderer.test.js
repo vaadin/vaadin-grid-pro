@@ -1,116 +1,59 @@
-<!doctype html>
-
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>edit-column-renderer test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script src="../../../wct-browser-legacy/browser.js"></script>
-  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
-
-  <script type="module" src="./helpers.js"></script>
-  <script type="module" src="./not-animated-styles.js"></script>
-  <script type="module" src="../vaadin-grid-pro.js"></script>
-  <script type="module" src="../vaadin-grid-pro-edit-column.js"></script>
-</head>
-
-<body>
-
-  <test-fixture id="grid-with-renderers">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
-        <vaadin-grid-column>
-          <template>[[item.name]]</template>
-        </vaadin-grid-column>
-      </vaadin-grid>
-    </template>
-  </test-fixture>
-
-  <dom-module id="user-editor">
-    <template>
-      <input value="{{user.name::input}}">
-    </template>
-    <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import './helpers.js';
-import './not-animated-styles.js';
+import { expect } from '@esm-bundle/chai';
+import sinon from 'sinon';
+import { fixtureSync } from '@open-wc/testing-helpers';
+import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
+import {
+  createItems,
+  dblclick,
+  enter,
+  esc,
+  flushGrid,
+  getCellEditor,
+  getContainerCell,
+  getContainerCellContent,
+  space
+} from './helpers.js';
 import '../vaadin-grid-pro.js';
 import '../vaadin-grid-pro-edit-column.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-customElements.whenDefined('vaadin-grid-pro-edit-column').then(() => {
-  customElements.define('user-editor', class extends PolymerElement {
-    static get is() {
-      return 'user-editor';
+
+customElements.define(
+  'user-editor',
+  class extends PolymerElement {
+    static get template() {
+      return html`<input value="{{user.name::input}}" />`;
     }
+
     static get properties() {
       return {
         user: {
           type: Object,
           value: () => {
-            return {name: null};
+            return { name: null };
           }
         }
       };
     }
-  });
-});
-</script>
-  </dom-module>
-
-  <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import './helpers.js';
-import './not-animated-styles.js';
-import '../vaadin-grid-pro.js';
-import '../vaadin-grid-pro-edit-column.js';
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-function getItems() {
-  return [
-    {name: 'foo', age: 20, married: true, title: 'mrs'},
-    {name: 'bar', age: 30, married: false, title: 'ms'},
-    {name: 'baz', age: 40, married: false, title: 'mr'}
-  ];
-}
-
-function dblclick(target) {
-  if (isIOS) {
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-  } else {
-    target.dispatchEvent(new CustomEvent('dblclick', {bubbles: true, composed: true}));
   }
-}
-
-function space(target) {
-  MockInteractions.keyDownOn(target, 32, [], ' ');
-}
-
-function enter(target) {
-  MockInteractions.keyDownOn(target, 13, [], 'Enter');
-}
-
-function esc(target) {
-  MockInteractions.keyDownOn(target, 27, [], 'Escape');
-}
+);
 
 describe('edit column renderer', () => {
-
   describe('default mode', () => {
     let grid, column, firstCell, input;
 
     beforeEach(() => {
-      grid = fixture('grid-with-renderers');
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column>
+            <template>[[item.name]]</template>
+          </vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
       column = grid.firstElementChild;
-      grid.items = getItems();
+      grid.items = createItems();
 
-      column.renderer = function(root, owner, model) {
+      column.renderer = function (root, owner, model) {
         root.innerHTML = '';
         const wrapper = document.createElement('div');
         const text = document.createTextNode(model.index + ' ' + model.item.name);
@@ -134,7 +77,7 @@ describe('edit column renderer', () => {
       dblclick(firstCell._content);
       input = getCellEditor(firstCell);
       dblclick(input);
-      expect(spy).to.be.calledOnce;
+      expect(spy.calledOnce).to.be.true;
     });
 
     it('should replace renderer and render text-field on editable cell Enter', () => {
@@ -178,20 +121,20 @@ describe('edit column renderer', () => {
     });
 
     describe('single click edit', () => {
-
-      beforeEach(() => grid.editOnClick = true);
+      beforeEach(() => {
+        grid.editOnClick = true;
+      });
 
       it('should enter edit mode on single click', () => {
-        firstCell._content.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
+        firstCell._content.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
         expect(getCellEditor(firstCell)).to.be.ok;
       });
 
       it('should not enter edit mode on single click', () => {
         grid.editOnClick = false;
-        firstCell._content.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
+        firstCell._content.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
         expect(getCellEditor(firstCell)).not.to.be.ok;
       });
-
     });
   });
 
@@ -199,15 +142,23 @@ describe('edit column renderer', () => {
     let grid, column, cell, editor;
 
     beforeEach(() => {
-      grid = fixture('grid-with-renderers');
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column>
+            <template>[[item.name]]</template>
+          </vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
       column = grid.firstElementChild;
-      grid.items = getItems();
+      grid.items = createItems();
       flushGrid(grid);
       cell = getContainerCell(grid.$.items, 0, 0);
     });
 
     it('should call the edit mode renderer to cell when entering edit mode', () => {
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '<input>';
       };
 
@@ -221,7 +172,7 @@ describe('edit column renderer', () => {
     it('should call `focus()` on the custom editor component after entering the cell edit mode', () => {
       let spy;
 
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '';
         const input = document.createElement('input');
         spy = sinon.spy(input, 'focus');
@@ -229,13 +180,13 @@ describe('edit column renderer', () => {
       };
 
       dblclick(cell._content);
-      expect(spy).to.be.calledOnce;
+      expect(spy.calledOnce).to.be.true;
     });
 
     it('should call `select()` on the custom editor component, if the <input> was rendered', () => {
       let spy;
 
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '';
         const input = document.createElement('input');
         spy = sinon.spy(input, 'select');
@@ -243,11 +194,11 @@ describe('edit column renderer', () => {
       };
 
       dblclick(cell._content);
-      expect(spy).to.be.calledOnce;
+      expect(spy.calledOnce).to.be.true;
     });
 
     it('should exit the edit mode on custom editor component focusout event', () => {
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root, _, model) {
         root.innerHTML = '';
         const input = document.createElement('input');
         input.value = model.item.name;
@@ -257,21 +208,21 @@ describe('edit column renderer', () => {
       dblclick(cell._content);
       editor = getCellEditor(cell);
       editor.value = 'Foo';
-      editor.dispatchEvent(new CustomEvent('focusout', {bubbles: true, composed: true}));
+      editor.dispatchEvent(new CustomEvent('focusout', { bubbles: true, composed: true }));
       grid._flushStopEdit();
       expect(getCellEditor(cell)).to.not.be.ok;
       expect(cell._content.textContent).to.equal('Foo');
     });
 
     it('should set the column `editorType` to custom when renderer is defined', () => {
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '<input>';
       };
       expect(column.editorType).to.be.equal('custom');
     });
 
     it('should reset the column `editorType` to text when renderer is removed', () => {
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '<input>';
       };
       column.editModeRenderer = null;
@@ -279,17 +230,17 @@ describe('edit column renderer', () => {
     });
 
     it('should throw an error and remove template when added after renderer', () => {
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '<input>';
       };
-      expect(() => column._editModeTemplate = {}).to.throw(Error);
+      expect(() => (column._editModeTemplate = {})).to.throw(Error);
       expect(column._editModeTemplate).to.be.not.ok;
     });
 
     it('should close editor and update value when scrolling edited cell out of view', () => {
-      grid.items = Array.apply(null, {length: 30}).map(_ => Object.assign({}, getItems()[0]));
+      grid.items = Array.apply(null, { length: 30 }).map((_) => Object.assign({}, createItems()[0]));
       cell = getContainerCell(grid.$.items, 0, 0);
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root) {
         root.innerHTML = '<input>';
       };
 
@@ -308,13 +259,21 @@ describe('edit column renderer', () => {
     let grid, column, cell, editor;
 
     beforeEach(() => {
-      grid = fixture('grid-with-renderers');
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age"></vaadin-grid-pro-edit-column>
+          <vaadin-grid-column>
+            <template>[[item.name]]</template>
+          </vaadin-grid-column>
+        </vaadin-grid-pro>
+      `);
       column = grid.firstElementChild;
       column.editorValuePath = 'user.name';
-      column.editModeRenderer = function(root, owner, model) {
+      column.editModeRenderer = function (root, owner, model) {
         root.innerHTML = '<user-editor>';
       };
-      grid.items = getItems();
+      grid.items = createItems();
       flushGrid(grid);
       cell = getContainerCell(grid.$.items, 0, 0);
     });
@@ -336,8 +295,3 @@ describe('edit column renderer', () => {
     });
   });
 });
-</script>
-
-</body>
-
-</html>

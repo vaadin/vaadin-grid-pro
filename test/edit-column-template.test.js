@@ -1,94 +1,37 @@
-<!doctype html>
-
-<html>
-
-<head>
-  <meta charset="UTF-8">
-  <title>edit-column test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script src="../../../wct-browser-legacy/browser.js"></script>
-  <script src="../../../@polymer/iron-test-helpers/mock-interactions.js" type="module"></script>
-  <script type="module" src="../../../@polymer/test-fixture/test-fixture.js"></script>
-
-  <script type="module" src="./helpers.js"></script>
-  <script type="module" src="./not-animated-styles.js"></script>
-  <script type="module" src="../vaadin-grid-pro.js"></script>
-  <script type="module" src="../vaadin-grid-pro-edit-column.js"></script>
-</head>
-
-<body>
-
-  <test-fixture id="grid-with-templates">
-    <template>
-      <vaadin-grid-pro>
-        <vaadin-grid-pro-edit-column path="name">
-          <template class="header">Name</template>
-          <template>[[index]] [[item.name]]</template>
-          <template class="footer"></template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column id="custom" path="name">
-          <template>[[item.name]]</template>
-          <template class="editor">
-            <input value="{{item.name::input}}">
-          </template>
-        </vaadin-grid-pro-edit-column>
-        <vaadin-grid-pro-edit-column path="age">
-          <template class="editor">
-            <input type="number" value="{{item.age::input}}">
-          </template>
-        </vaadin-grid-pro-edit-column>
-      </vaadin-grid>
-    </template>
-  </test-fixture>
-
-  <script type="module">
-import '@polymer/test-fixture/test-fixture.js';
-import './helpers.js';
-import './not-animated-styles.js';
+import { expect } from '@esm-bundle/chai';
+import sinon from 'sinon';
+import { fixtureSync } from '@open-wc/testing-helpers';
+import { createItems, dblclick, enter, esc, flushGrid, getCellEditor, getContainerCell, space } from './helpers.js';
 import '../vaadin-grid-pro.js';
 import '../vaadin-grid-pro-edit-column.js';
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-function getItems() {
-  return [
-    {name: 'foo', age: 20, married: true, title: 'mrs'},
-    {name: 'bar', age: 30, married: false, title: 'ms'},
-    {name: 'baz', age: 40, married: false, title: 'mr'}
-  ];
-}
-
-function dblclick(target) {
-  if (isIOS) {
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-    target.dispatchEvent(new CustomEvent('click', {bubbles: true, composed: true}));
-  } else {
-    target.dispatchEvent(new CustomEvent('dblclick', {bubbles: true, composed: true}));
-  }
-}
-
-function space(target) {
-  MockInteractions.keyDownOn(target, 32, [], ' ');
-}
-
-function enter(target) {
-  MockInteractions.keyDownOn(target, 13, [], 'Enter');
-}
-
-function esc(target) {
-  MockInteractions.keyDownOn(target, 27, [], 'Escape');
-}
 
 describe('edit column template', () => {
-
   describe('default', () => {
     let grid, column, cell, input;
 
     beforeEach(() => {
-      grid = fixture('grid-with-templates');
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column id="custom" path="name">
+            <template>[[item.name]]</template>
+            <template class="editor">
+              <input value="{{item.name::input}}">
+            </template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age">
+            <template class="editor">
+              <input type="number" value="{{item.age::input}}">
+            </template>
+          </vaadin-grid-pro-edit-column>
+        </vaadin-grid-pro>
+      `);
       column = grid.firstElementChild;
-      grid.items = getItems();
+      grid.items = createItems();
 
       flushGrid(grid);
       cell = getContainerCell(grid.$.items, 0, 0);
@@ -106,7 +49,7 @@ describe('edit column template', () => {
       dblclick(cell._content);
       input = getCellEditor(cell);
       dblclick(input);
-      expect(spy).to.be.calledOnce;
+      expect(spy.calledOnce).to.be.true;
     });
 
     it('should replace template and render text-field on editable cell Enter', () => {
@@ -151,8 +94,27 @@ describe('edit column template', () => {
     let grid, column, cell, input;
 
     beforeEach(() => {
-      grid = fixture('grid-with-templates');
-      grid.items = getItems();
+      grid = fixtureSync(`
+        <vaadin-grid-pro>
+          <vaadin-grid-pro-edit-column path="name">
+            <template class="header">Name</template>
+            <template>[[index]] [[item.name]]</template>
+            <template class="footer"></template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column id="custom" path="name">
+            <template>[[item.name]]</template>
+            <template class="editor">
+              <input value="{{item.name::input}}">
+            </template>
+          </vaadin-grid-pro-edit-column>
+          <vaadin-grid-pro-edit-column path="age">
+            <template class="editor">
+              <input type="number" value="{{item.age::input}}">
+            </template>
+          </vaadin-grid-pro-edit-column>
+        </vaadin-grid-pro>
+      `);
+      grid.items = createItems();
       flushGrid(grid);
     });
 
@@ -201,13 +163,8 @@ describe('edit column template', () => {
 
     it('should throw an error and remove renderer when added after template', () => {
       column = grid.querySelector('#custom');
-      expect(() => column.editModeRenderer = {}).to.throw(Error);
+      expect(() => (column.editModeRenderer = {})).to.throw(Error);
       expect(column.editModeRenderer).to.be.not.ok;
     });
   });
 });
-</script>
-
-</body>
-
-</html>
