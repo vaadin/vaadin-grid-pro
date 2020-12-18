@@ -1,5 +1,6 @@
 /* eslint-env node */
 const { createSauceLabsLauncher } = require('@web/test-runner-saucelabs');
+const fs = require('fs');
 
 const config = {
   nodeResolve: true,
@@ -23,6 +24,14 @@ const config = {
 };
 
 if (process.env.TEST_ENV === 'sauce') {
+  // Exclude some suites to fix Sauce timeouts.
+  const exclude = ['edit-column-overlay.test.js'];
+
+  const tests = fs
+    .readdirSync('./test/')
+    .filter((file) => file.includes('test.js') && !exclude.includes(file))
+    .map((file) => `test/${file}`);
+
   const sauceLabsLauncher = createSauceLabsLauncher(
     {
       user: process.env.SAUCE_USERNAME,
@@ -37,6 +46,7 @@ if (process.env.TEST_ENV === 'sauce') {
   );;
 
   config.concurrency = 1;
+  config.files = tests;
   config.browsers = [
     sauceLabsLauncher({
       browserName: 'firefox',
