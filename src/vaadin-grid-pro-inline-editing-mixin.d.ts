@@ -1,3 +1,5 @@
+import { GridItem } from '@vaadin/vaadin-grid';
+
 export { InlineEditingMixin };
 
 declare function InlineEditingMixin<T extends new (...args: any[]) => {}>(base: T): T & InlineEditingMixinConstructor;
@@ -40,5 +42,3 @@ interface InlineEditingMixin {
 
   _updateItem(row: HTMLElement, item: GridItem | null): void;
 }
-
-import { GridItem } from '@vaadin/vaadin-grid/@types/interfaces';
