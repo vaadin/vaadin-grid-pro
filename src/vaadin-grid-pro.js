@@ -20,6 +20,19 @@ import '@vaadin/vaadin-license-checker/vaadin-license-checker.js';
  * <vaadin-grid-pro></vaadin-grid-pro>
  * ```
  *
+ * @fires {CustomEvent} active-item-changed - Fired when the `activeItem` property changes.
+ * @fires {CustomEvent} cell-activate - Fired when the cell is activated with click or keyboard.
+ * @fires {CustomEvent} cell-edit-started - Fired when the user starts editing a grid cell.
+ * @fires {CustomEvent} column-reorder - Fired when the columns in the grid are reordered.
+ * @fires {CustomEvent} column-resize - Fired when the grid column resize is finished.
+ * @fires {CustomEvent} expanded-items-changed - Fired when the `expandedItems` property changes.
+ * @fires {CustomEvent} grid-dragstart - Fired when starting to drag grid rows.
+ * @fires {CustomEvent} grid-dragend - Fired when the dragging of the rows ends.
+ * @fires {CustomEvent} grid-drop - Fired when a drop occurs on top of the grid.
+ * @fires {CustomEvent} item-property-changed - Fired before exiting the cell edit mode, if the value has been changed.
+ * @fires {CustomEvent} loading-changed - Fired when the `loading` property changes.
+ * @fires {CustomEvent} selected-items-changed - Fired when the `selectedItems` property changes.
+ *
  * @extends GridElement
  * @mixes InlineEditingMixin
  */
