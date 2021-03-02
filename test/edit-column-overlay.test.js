@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai';
-import { fixtureSync } from '@open-wc/testing-helpers';
+import { fixtureSync, nextFrame } from '@open-wc/testing-helpers';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 import '@vaadin/vaadin-dialog/vaadin-dialog.js';
 import { createItems, enter, flushGrid, getCellEditor, getContainerCell } from './helpers.js';
@@ -11,7 +11,7 @@ async function clickOverlay(element) {
   element.dispatchEvent(focusout);
 
   // add a microTask in between
-  await new Promise((resolve) => resolve());
+  await Promise.resolve();
 
   const focusin = new CustomEvent('focusin', { bubbles: true, composed: true });
   element.$.overlay.dispatchEvent(focusin);
@@ -80,7 +80,7 @@ const fixtures = {
       await clickOverlay(datePicker);
       grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
 
-      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await nextFrame();
       expect(getCellEditor(dateCell)).to.be.ok;
     });
 
