@@ -6,9 +6,12 @@ import { createItems, enter, flushGrid, getCellEditor, getContainerCell } from '
 import '../vaadin-grid-pro.js';
 import '../vaadin-grid-pro-edit-column.js';
 
-function clickOverlay(element) {
+async function clickOverlay(element) {
   const focusout = new CustomEvent('focusout', { bubbles: true, composed: true });
   element.dispatchEvent(focusout);
+
+  // add a microTask in between
+  await new Promise((resolve) => resolve());
 
   const focusin = new CustomEvent('focusin', { bubbles: true, composed: true });
   element.$.overlay.dispatchEvent(focusin);
@@ -69,14 +72,15 @@ const fixtures = {
       }
     });
 
-    it('should not stop editing when focusing input related overlay', () => {
+    it('should not stop editing when focusing input related overlay', async () => {
       enter(dateCell);
       const datePicker = getCellEditor(dateCell).querySelector('vaadin-date-picker');
       datePicker.click();
 
-      clickOverlay(datePicker);
+      await clickOverlay(datePicker);
       grid._debouncerStopEdit && grid._debouncerStopEdit.flush();
 
+      await new Promise((resolve) => requestAnimationFrame(resolve));
       expect(getCellEditor(dateCell)).to.be.ok;
     });
 
