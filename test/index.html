@@ -11,12 +11,7 @@
 
 <body>
   <script>
-    WCT.loadSuites(
-      window.GridProElementSuites
-        .reduce(function(suites, suite) {
-          return suites.concat([suite, `${suite}?wc-shadydom=true`]);
-        }, [])
-    );
+    WCT.loadSuites(window.GridProElementSuites);
   </script>
 </body>
 
