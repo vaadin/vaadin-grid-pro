@@ -270,7 +270,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       // schedule stop on editor component focusout
       this._debouncerStopEdit = Polymer.Debouncer.debounce(
         this._debouncerStopEdit,
-        Polymer.Async.microTask,
+        Polymer.Async.animationFrame,
         this._stopEdit.bind(this));
     }
 

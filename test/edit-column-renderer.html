@@ -276,7 +276,10 @@
         });
 
         it('should close editor and update value when scrolling edited cell out of view', () => {
+          grid.items = null;
           grid.items = Array.apply(null, {length: 30}).map(_ => Object.assign({}, getItems()[0]));
+          flushGrid(grid);
+
           cell = getContainerCell(grid.$.items, 0, 0);
           column.editModeRenderer = function(root, owner, model) {
             root.innerHTML = '<input>';
