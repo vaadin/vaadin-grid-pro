@@ -1,10 +1,13 @@
 # &lt;vaadin-grid-pro&gt;
 
+> ⚠️ Starting from Vaadin 20, the source code and issues for this component are migrated to the [`vaadin/web-components`](https://github.com/vaadin/web-components/tree/master/packages/vaadin-grid-pro) monorepository.
+> This repository contains the source code and releases of `<vaadin-grid-pro>` for the Vaadin versions 10 to 19.
+
+[&lt;vaadin-grid-pro&gt;](https://vaadin.com/components/vaadin-grid-pro) is a high quality data grid / data table Web Component with extended functionality, part of the [Vaadin components](https://vaadin.com/components).
+
 [Live Demo ↗](https://vaadin.com/components/vaadin-grid-pro/html-examples)
 |
 [API documentation ↗](https://vaadin.com/components/vaadin-grid-pro/html-api)
-
-[&lt;vaadin-grid-pro&gt;](https://vaadin.com/components/vaadin-grid-pro) is a high quality data grid / data table Web Component with extended functionality, part of the [Vaadin components](https://vaadin.com/components).
 
 [![npm version](https://badgen.net/npm/v/@vaadin/vaadin-grid-pro)](https://www.npmjs.com/package/@vaadin/vaadin-grid-pro)
 [![Build Status](https://travis-ci.org/vaadin/vaadin-grid-pro.svg?branch=master)](https://travis-ci.org/vaadin/vaadin-grid-pro)
