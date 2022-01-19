@@ -47,7 +47,7 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       let rowIdx = -1;
       if (isNaN(row)) { // If row is not a number, maybe it's because the item was passed instead
         if (!row.hasOwnProperty('key')) {
-          throw new Error('Invalid object passed as row item.')
+          throw new Error('Invalid object passed as row item.');
         }
         rowIdx = row.key - 1;
       } else {
@@ -56,12 +56,12 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
       // Make sure col[colIdx] exists and is editable:
       if (colIdx > columns.length) {
-        throw new Error('Invalid colIdx (out of bounds)')
+        throw new Error('Invalid colIdx (out of bounds)');
       }
 
-      const column = columns[colIdx]
+      const column = columns[colIdx];
       if (!this._isEditColumn(column)) {
-        throw new Error('Column is not editable')
+        throw new Error('Column is not editable');
       }
 
       // Get rows (excluding header)
@@ -70,10 +70,10 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
 
       // Make sure row[rowIdx] exists
       if (rowIdx > tRows.length) {
-        throw new Error('Invalid rowIdx (out of bounds)')
+        throw new Error('Invalid rowIdx (out of bounds)');
       }
 
-      this._startEdit(tRows[rowIdx].cells[colIdx], column)
+      this._startEdit(tRows[rowIdx].cells[colIdx], column);
     }
 
   };
