@@ -13,6 +13,7 @@
   ],
   "author": "Vaadin Ltd",
   "license": "SEE LICENSE IN LICENSE",
+  "cvdlName": "vaadin-grid-pro",
   "bugs": {
     "url": "https://github.com/vaadin/vaadin-grid-pro/issues"
   },
