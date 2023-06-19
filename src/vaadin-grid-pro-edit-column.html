@@ -321,8 +321,8 @@ See <a href="https://vaadin.com/license/cval-3">the website</a> for the complete
       /** @private */
       _removeEditor(cell, model) {
         if (cell.__savedTemplate) {
-          this._stampTemplateToCell(cell, cell.__savedTemplate, model);
           cell._renderer = undefined;
+          this._stampTemplateToCell(cell, cell.__savedTemplate, model);
           cell.__savedTemplate = undefined;
         } else if (cell.__savedRenderer) {
           this._stampRendererToCell(cell, cell.__savedRenderer, model);
