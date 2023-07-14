@@ -140,6 +140,19 @@
           expect(getCellEditor(cell)).to.be.not.ok;
           expect(cell._content.textContent).to.equal(old);
         });
+
+        it('should restore template and remove editor when editing stopped after selection', () => {
+          const old = cell._content.textContent;
+          enter(cell);
+          grid.selectItem(grid.items[0]);
+          // Emulating stop editing with focusout
+          getCellEditor(cell).dispatchEvent(new CustomEvent('focusout', {bubbles: true, composed: true}));
+          grid._flushStopEdit();
+          expect(cell._renderer).to.be.not.ok;
+          expect(cell._template).to.equal(column._bodyTemplate);
+          expect(getCellEditor(cell)).to.be.not.ok;
+          expect(cell._content.textContent).to.equal(old);
+        });
       });
 
       describe('custom edit mode template', () => {
